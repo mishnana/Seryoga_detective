@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<title>Детектив, кот и пропажа дудок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--fd:'Traktir','Russo One','Georgia',serif;--fb:'Georgia','Times New Roman',serif;--nc:#b89dff;--ng:#7a4dff}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#000;font-family:var(--fb);color:#e8e8e8;user-select:none}
+body{display:flex;align-items:center;justify-content:center;width:100%}
+#game{position:relative;width:100%;height:100dvh;max-width:480px;margin:0 auto;overflow:hidden;background:#0a0a0f;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(120,80,255,.15)}
+@media (min-width:600px){#game{height:min(100dvh,900px);max-height:900px;border-radius:14px}}
+#loader{position:absolute;inset:0;z-index:100;background:radial-gradient(circle at 50% 40%,rgba(122,77,255,.15),transparent 60%),#05050a;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease}
+#loader.done{opacity:0;pointer-events:none}
+#loader::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(105deg,transparent 0,transparent 3px,rgba(180,180,220,.04) 3px,rgba(180,180,220,.04) 4px);animation:rain .4s linear infinite;pointer-events:none}
+.loader-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:24px;max-width:340px;width:100%}
+.loader-title{font-family:var(--fd);font-size:clamp(18px,6vw,22px);letter-spacing:clamp(2px,1vw,3px);text-transform:uppercase;color:#e8ddff;text-align:center;line-height:1.3;margin-bottom:30px;text-shadow:0 0 6px #fff,0 0 16px var(--nc),0 0 32px var(--ng);animation:neonPulse 2.2s ease-in-out infinite alternate}
+.loader-status{font-family:var(--fd);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#b89dff;text-align:center;margin-bottom:14px;min-height:16px;text-shadow:0 0 8px rgba(184,157,255,.5)}
+.loader-bar{position:relative;width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;box-shadow:0 0 20px rgba(122,77,255,.2) inset}
+.loader-bar-fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#ff4d1a,#ffd97a,#fff);border-radius:3px;box-shadow:0 0 12px #ff8c42,0 0 24px rgba(255,120,60,.6);transition:width .1s linear}
+.loader-bar-fill::after{content:'';position:absolute;right:-4px;top:-4px;bottom:-4px;width:12px;background:radial-gradient(circle,#fff 0%,#ffd97a 30%,transparent 70%);border-radius:50%;filter:blur(2px);animation:ember 0.6s ease-in-out infinite alternate}
+@keyframes ember{from{opacity:.7;transform:scale(.9)}to{opacity:1;transform:scale(1.15)}}
+.loader-percent{font-family:var(--fd);font-size:12px;letter-spacing:2px;color:#ffd97a;margin-top:12px;text-shadow:0 0 8px rgba(255,217,122,.6)}
+#main-menu{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(32px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));background:radial-gradient(circle at 50% 30%,rgba(255,60,120,.12),transparent 55%),radial-gradient(circle at 50% 90%,rgba(122,77,255,.15),transparent 60%),linear-gradient(180deg,#05050a 0%,#0d0d18 50%,#05050a 100%);background-size:cover;background-position:center;background-repeat:no-repeat;animation:fadeIn .4s ease;overflow-y:auto}
+#main-menu::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(105deg,transparent 0,transparent 3px,rgba(180,180,220,.05) 3px,rgba(180,180,220,.05) 4px);animation:rain .4s linear infinite;pointer-events:none}
+#main-menu>*{position:relative;z-index:1}
+.menu-title{font-family:var(--fd);font-size:clamp(26px,9vw,38px);letter-spacing:clamp(2px,1.6vw,6px);text-transform:uppercase;color:#e8ddff;text-align:center;margin-bottom:12px;line-height:1.1;animation:neonPulse 2.2s ease-in-out infinite alternate}
+@keyframes neonPulse{from{text-shadow:0 0 4px #fff,0 0 10px #fff,0 0 20px var(--nc),0 0 40px var(--nc),0 0 80px var(--ng),0 0 120px var(--ng)}to{text-shadow:0 0 6px #fff,0 0 14px #fff,0 0 28px var(--nc),0 0 56px var(--nc),0 0 100px var(--ng),0 0 160px var(--ng)}}
+.menu-sub{font-family:var(--fd);font-size:clamp(9px,2.8vw,11px);letter-spacing:clamp(2px,1.2vw,4px);color:#cfc0ff;text-transform:uppercase;margin-bottom:40px;text-align:center;text-shadow:0 0 4px rgba(255,255,255,.5),0 0 12px var(--nc),0 0 24px var(--ng)}
+.menu-buttons{display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px}
+.main-btn{font-family:var(--fd);padding:15px 20px;background:rgba(15,15,30,.85);border:1px solid rgba(122,77,255,.5);border-radius:12px;color:#e8e8e8;font-size:13px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .25s ease;backdrop-filter:blur(6px);text-shadow:0 0 8px rgba(184,157,255,.5);min-height:44px;touch-action:manipulation}
+.main-btn:hover,.main-btn:active{background:rgba(122,77,255,.3);border-color:#b89dff;color:#fff;transform:translateY(-2px);box-shadow:0 0 20px rgba(122,77,255,.5);text-shadow:0 0 8px #fff,0 0 16px var(--nc)}
+.main-btn.primary{border-color:rgba(212,175,55,.6);color:#ffd97a;text-shadow:0 0 8px rgba(255,217,122,.6)}
+.main-btn.primary:hover,.main-btn.primary:active{background:rgba(212,175,55,.25);border-color:#ffd97a;color:#fff5d6}
+.main-btn.danger{border-color:rgba(180,60,60,.5);color:#e88;text-shadow:0 0 8px rgba(255,120,120,.5)}
+.main-btn.danger:hover,.main-btn.danger:active{background:rgba(180,60,60,.25);border-color:#ff8888;color:#ffdddd}
+.main-btn.secondary{padding:12px 18px;font-size:11px;letter-spacing:2px;opacity:.9}
+.save-hint{margin-top:18px;font-size:11px;color:#8a8a9a;letter-spacing:1px;text-align:center;font-style:italic}
+.menu-footer{margin-top:32px;font-family:var(--fd);font-size:10px;color:#6a6a7a;letter-spacing:3px;text-align:center;text-shadow:0 0 6px rgba(122,77,255,.3)}
+.reset-btn{margin-top:14px;padding:10px 18px;background:transparent;border:1px solid rgba(180,60,60,.35);border-radius:8px;color:#aa7777;font-family:var(--fd);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .25s ease;opacity:.8;min-height:44px;touch-action:manipulation}
+.reset-btn:hover,.reset-btn:active{opacity:1;border-color:#ff8888;color:#ffdddd;background:rgba(180,60,60,.15);box-shadow:0 0 15px rgba(180,60,60,.3)}
+#hud{position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 12px calc(16px + env(safe-area-inset-left));display:flex;gap:10px;background:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,0))}
+.stat{flex:1}
+.stat-label{display:block;font-family:var(--fd);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#a99cc8;margin-bottom:4px;text-shadow:0 0 6px rgba(184,157,255,.4)}
+.bar{width:100%;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.fill{height:100%;width:50%;transition:width .4s ease;border-radius:3px}
+.fill.clarity{background:linear-gradient(90deg,#d4af37,#ffd97a);box-shadow:0 0 8px rgba(212,175,55,.6)}
+.fill.trust{background:linear-gradient(90deg,#7a4dff,#b89dff);box-shadow:0 0 8px rgba(122,77,255,.6)}
+.fill.affection{background:linear-gradient(90deg,#ff4d8a,#ffa5c8);box-shadow:0 0 8px rgba(255,77,138,.6)}
+#stage{position:relative;flex:1;overflow:hidden}
+#background{position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,60,120,.15),transparent 60%),radial-gradient(circle at 80% 80%,rgba(60,120,255,.15),transparent 60%),linear-gradient(180deg,#0d0d15 0%,#1a0f1f 50%,#05050a 100%);transition:background 1s ease}
+#background-img{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity .6s ease;z-index:1}
+#background-img.visible{opacity:1}
+#background-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.1) 30%,rgba(0,0,0,.3) 70%,rgba(0,0,0,.7) 100%)}
+#rain{position:absolute;inset:0;background-image:repeating-linear-gradient(105deg,transparent 0,transparent 3px,rgba(180,180,220,.06) 3px,rgba(180,180,220,.06) 4px);animation:rain .4s linear infinite;pointer-events:none;z-index:2}
+@keyframes rain{from{background-position:0 0}to{background-position:-20px 40px}}
+#sprites{position:absolute;inset:0;pointer-events:none;z-index:3}
+.sprite{position:absolute;bottom:6%;height:52%;max-height:420px;min-width:60px;opacity:0;transition:opacity .35s ease;will-change:opacity;filter:drop-shadow(0 0 12px rgba(0,0,0,.6));pointer-events:none}
+.sprite.visible{opacity:1}
+.sprite.pos-left{left:0}
+.sprite.pos-center{left:50%;transform:translateX(-50%)}
+.sprite.pos-right{right:0}
+.sprite.active{filter:drop-shadow(0 0 25px rgba(122,77,255,.6)) brightness(1)}
+.sprite:not(.active){filter:drop-shadow(0 0 20px rgba(0,0,0,.7)) brightness(.55)}
+.sprite>img{height:100%;width:auto;max-width:60vw;display:block;object-fit:contain;object-position:bottom center}
+.sprite.fallback-cat{width:100px;height:100px;background:radial-gradient(circle at 50% 40%,#1a1a2a 40%,#000 100%);border-radius:50%;box-shadow:0 0 30px rgba(122,77,255,.4);animation:float 3s ease-in-out infinite;opacity:1;bottom:30%;height:auto;max-height:none}
+.sprite.fallback-cat::before,.sprite.fallback-cat::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#b89dff;box-shadow:0 0 12px #b89dff,0 0 24px #7a4dff;top:45%}
+.sprite.fallback-cat::before{left:38%}
+.sprite.fallback-cat::after{right:38%}
+.sprite.fallback-human{width:100px;height:220px;background:radial-gradient(ellipse at 50% 20%,rgba(255,255,255,.15),transparent 70%),linear-gradient(180deg,transparent 0%,rgba(122,77,255,.15) 50%,rgba(122,77,255,.25) 100%);border-radius:50px 50px 20px 20px;box-shadow:0 0 40px rgba(122,77,255,.3);bottom:18%;height:auto;max-height:none;opacity:1}
+.sprite.fallback-villain{width:110px;height:230px;background:radial-gradient(ellipse at 50% 15%,rgba(255,60,80,.25),transparent 70%),linear-gradient(180deg,transparent 0%,rgba(120,20,40,.35) 50%,rgba(60,0,10,.5) 100%);border-radius:50px 50px 20px 20px;box-shadow:0 0 60px rgba(255,60,80,.45);bottom:16%;height:auto;max-height:none;opacity:1}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+#dialogue-box{position:absolute;left:calc(12px + env(safe-area-inset-left));right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));z-index:5;padding:16px 18px 24px;background:rgba(8,8,16,.92);border:1px solid rgba(122,77,255,.4);border-radius:12px;backdrop-filter:blur(8px);box-shadow:0 0 30px rgba(122,77,255,.2),inset 0 0 20px rgba(0,0,0,.5);min-height:120px;max-height:min(45dvh,320px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#speaker{font-family:var(--fd);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#b89dff;margin-bottom:10px;min-height:16px;text-shadow:0 0 8px rgba(184,157,255,.6)}
+#speaker.mack{color:#d4af37;text-shadow:0 0 10px rgba(212,175,55,.7)}
+#speaker.filya{color:#b89dff;text-shadow:0 0 10px rgba(184,157,255,.7)}
+#speaker.gromova{color:#6ec1ff;text-shadow:0 0 10px rgba(110,193,255,.7)}
+#speaker.system{color:#8a8a9a;font-style:italic;text-shadow:none}
+#speaker.npc1{color:#ff9a5a;text-shadow:0 0 10px rgba(255,154,90,.7)}
+#speaker.npc2{color:#7ae3b3;text-shadow:0 0 10px rgba(122,227,179,.7)}
+#speaker.villain{color:#ff4d6d;text-shadow:0 0 12px rgba(255,77,109,.8)}
+#text{font-size:clamp(14px,4.2vw,15px);line-height:1.55;color:#e8e8e8;min-height:42px}
+#continue-hint{position:absolute;right:16px;bottom:8px;font-size:12px;color:#b89dff;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(2px)}}
+#center-card{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;padding:32px;pointer-events:none}
+#center-card-text{font-family:var(--fd);text-align:center;color:#e8ddff;line-height:1.4;max-width:400px;animation:neonPulse 2.2s ease-in-out infinite alternate}
+#center-card-text.title{font-size:clamp(24px,8vw,32px);letter-spacing:clamp(3px,1.4vw,5px);text-transform:uppercase}
+#center-card-text.intro{
+  font-size:clamp(15px,4.6vw,17px);
+  letter-spacing:1.5px;
+  color:#d8cfff;
+  line-height:1.65;
+  text-shadow:0 0 6px rgba(255,255,255,.4),0 0 20px var(--nc),0 0 40px var(--ng);
+  background:rgba(5,5,15,.55);
+  border:1px solid rgba(122,77,255,.2);
+  border-radius:14px;
+  padding:18px 22px;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  box-shadow:0 0 40px rgba(0,0,0,.4),inset 0 0 30px rgba(122,77,255,.08);
+  max-width:min(420px,calc(100vw - 56px));
+}
+#center-card.hidden{display:none}
+#choices{position:absolute;left:calc(12px + env(safe-area-inset-left));right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));z-index:6;display:flex;flex-direction:column;gap:8px;animation:slideUp .3s ease}
+.choice-btn{font-family:var(--fd);padding:14px 16px;background:rgba(10,10,20,.95);border:1px solid rgba(122,77,255,.5);border-radius:10px;color:#e8e8e8;font-size:12px;letter-spacing:1px;text-align:left;cursor:pointer;transition:all .2s ease;backdrop-filter:blur(6px);line-height:1.5;text-shadow:0 0 6px rgba(184,157,255,.4);min-height:44px;touch-action:manipulation}
+.choice-btn:hover,.choice-btn:active{background:rgba(122,77,255,.25);border-color:#b89dff;color:#fff;transform:translateX(4px)}
+#menu-btn{position:absolute;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));z-index:20;width:44px;height:44px;background:rgba(0,0,0,.6);border:1px solid rgba(122,77,255,.4);border-radius:8px;color:#b89dff;font-size:20px;cursor:pointer;text-shadow:0 0 8px rgba(184,157,255,.6);touch-action:manipulation}
+#menu{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));overflow-y:auto;animation:fadeIn .25s ease}
+#menu h2{font-family:var(--fd);font-size:clamp(15px,4.5vw,22px);color:#b89dff;letter-spacing:clamp(2px,1.2vw,4px);text-transform:uppercase;margin-bottom:20px;text-align:center;text-shadow:0 0 6px #fff,0 0 16px var(--nc),0 0 32px var(--ng)}
+#menu button{font-family:var(--fd);width:100%;max-width:280px;padding:14px;background:rgba(20,20,35,.9);border:1px solid rgba(122,77,255,.5);border-radius:10px;color:#e8e8e8;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;text-shadow:0 0 6px rgba(184,157,255,.4);min-height:44px;touch-action:manipulation}
+#menu button:hover,#menu button:active{background:rgba(122,77,255,.3);border-color:#b89dff;color:#fff}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.hidden{display:none!important}
+#achievements,#characters,#credits{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.96);padding:calc(60px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));overflow-y:auto;-webkit-overflow-scrolling:touch;animation:fadeIn .25s ease}
+#characters,#credits{padding:calc(60px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
+#achievements h2,#characters h2,#credits h2{font-family:var(--fd);font-size:clamp(15px,4.5vw,18px);color:#b89dff;letter-spacing:clamp(2px,1.2vw,4px);text-transform:uppercase;margin-bottom:8px;text-align:center;text-shadow:0 0 6px #fff,0 0 16px var(--nc),0 0 32px var(--ng)}
+#credits h2{margin-bottom:30px}
+.ach-progress{text-align:center;font-size:12px;color:#8a8a9a;letter-spacing:1px;margin-bottom:20px}
+.ach-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid rgba(122,77,255,.25);border-radius:8px;margin-bottom:8px;background:rgba(15,15,25,.7)}
+.ach-item.unlocked{border-color:rgba(212,175,55,.6);background:rgba(40,30,10,.5);box-shadow:0 0 15px rgba(212,175,55,.15)}
+.ach-item.locked{opacity:.4}
+.ach-icon{flex-shrink:0;width:22px;height:22px;margin-top:1px;object-fit:contain;image-rendering:crisp-edges;filter:drop-shadow(0 0 4px rgba(255,217,122,.4))}
+.ach-item.unlocked .ach-icon{filter:drop-shadow(0 0 6px rgba(255,217,122,.7))}
+.ach-item.locked .ach-icon{filter:grayscale(1) opacity(.6)}
+.ach-body{flex:1;min-width:0}
+.ach-title{font-family:var(--fd);font-size:13px;color:#e8e8e8;margin-bottom:4px;letter-spacing:1px}
+.ach-item.unlocked .ach-title{color:#ffd97a;text-shadow:0 0 8px rgba(255,217,122,.5)}
+.ach-desc{font-size:12px;color:#8a8a9a;line-height:1.4}
+.char-intro{text-align:center;font-size:12px;color:#8a8a9a;letter-spacing:1px;margin-bottom:22px;font-style:italic}
+.char-empty{text-align:center;padding:40px 20px;font-size:13px;color:#8a8a9a;line-height:1.6;font-style:italic}
+.char-card{display:flex;gap:14px;align-items:flex-start;padding:14px;margin-bottom:12px;border:1px solid rgba(122,77,255,.3);border-radius:12px;background:rgba(15,15,25,.7)}
+.char-portrait{flex-shrink:0;width:64px;height:64px;border-radius:10px;background-size:cover;background-position:center top;background-color:rgba(10,10,20,.8);border:1px solid rgba(122,77,255,.3);box-shadow:0 0 15px rgba(122,77,255,.15);position:relative;overflow:hidden}
+.char-portrait.fallback-cat{background:radial-gradient(circle at 50% 40%,#1a1a2a 40%,#000 100%)}
+.char-portrait.fallback-cat::before,.char-portrait.fallback-cat::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#b89dff;box-shadow:0 0 10px #b89dff;top:45%}
+.char-portrait.fallback-cat::before{left:30%}
+.char-portrait.fallback-cat::after{right:30%}
+.char-portrait.fallback-human{background:radial-gradient(ellipse at 50% 25%,rgba(255,255,255,.12),transparent 70%),linear-gradient(180deg,transparent 0%,rgba(122,77,255,.2) 100%)}
+.char-portrait.fallback-human::after{content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(184,157,255,.6);font-family:var(--fd)}
+.char-portrait.fallback-villain{background:radial-gradient(ellipse at 50% 25%,rgba(255,60,80,.25),transparent 70%),linear-gradient(180deg,transparent 0%,rgba(60,0,10,.6) 100%)}
+.char-portrait.fallback-villain::after{content:'☀';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;color:rgba(255,77,109,.8);text-shadow:0 0 12px rgba(255,60,80,.6)}
+.char-info{flex:1;min-width:0}
+.char-name{font-family:var(--fd);font-size:14px;margin-bottom:3px;letter-spacing:2px;text-transform:uppercase}
+.char-name.mack{color:#d4af37}
+.char-name.filya{color:#b89dff}
+.char-name.gromova{color:#6ec1ff}
+.char-name.npc1{color:#ff9a5a}
+.char-name.npc2{color:#7ae3b3}
+.char-name.villain{color:#ff4d6d}
+.char-role{font-family:var(--fd);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a8a9a;margin-bottom:8px}
+.char-desc{font-size:13px;color:#c8c8d8;line-height:1.5}
+.credit-block{margin-bottom:24px;text-align:center}
+.credit-role{font-family:var(--fd);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a8a9a;margin-bottom:6px}
+.credit-name{font-family:var(--fd);font-size:14px;color:#e8e8e8;margin-bottom:4px;letter-spacing:1px;text-shadow:0 0 6px rgba(184,157,255,.4)}
+.credit-name.gold{color:#ffd97a;text-shadow:0 0 10px rgba(255,217,122,.6)}
+.credit-name.purple{color:#b89dff;text-shadow:0 0 10px rgba(184,157,255,.6)}
+.credit-quote{margin-top:30px;padding:16px;border:1px solid rgba(122,77,255,.25);border-radius:10px;background:rgba(15,15,25,.6);font-style:italic;font-size:13px;color:#b8b8c8;line-height:1.6;text-align:center}
+.credit-quote-author{margin-top:8px;font-size:12px;color:#b89dff;font-style:normal}
+.credit-footer{margin-top:30px;text-align:center;font-size:11px;color:#555;letter-spacing:2px;font-family:var(--fd)}
+.close-x{position:absolute;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));width:44px;height:44px;background:rgba(0,0,0,.6);border:1px solid rgba(122,77,255,.4);border-radius:8px;color:#b89dff;font-size:20px;cursor:pointer;z-index:2;text-shadow:0 0 8px rgba(184,157,255,.6);touch-action:manipulation}
+#confirm{position:absolute;inset:0;z-index:80;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .2s ease}
+.confirm-box{width:100%;max-width:340px;padding:24px 20px;background:rgba(15,15,25,.98);border:1px solid rgba(180,60,60,.5);border-radius:14px;box-shadow:0 0 40px rgba(180,60,60,.25);text-align:center}
+.confirm-box h3{font-family:var(--fd);font-size:clamp(13px,4vw,15px);color:#ff8888;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 10px rgba(255,120,120,.6)}
+.confirm-box p{font-size:13px;color:#b8b8c8;line-height:1.55;margin-bottom:22px}
+.confirm-buttons{display:flex;flex-direction:column;gap:8px}
+.confirm-buttons button{font-family:var(--fd);padding:12px;background:rgba(20,20,35,.9);border:1px solid rgba(122,77,255,.5);border-radius:10px;color:#e8e8e8;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;min-height:44px;touch-action:manipulation}
+.confirm-buttons button:hover{background:rgba(122,77,255,.3);border-color:#b89dff;color:#fff}
+.confirm-buttons button.confirm-yes{border-color:rgba(180,60,60,.6);color:#ff9999}
+.confirm-buttons button.confirm-yes:hover{background:rgba(180,60,60,.3);border-color:#ff8888;color:#ffdddd}
+#ach-toast{position:absolute;top:calc(70px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-120%);z-index:90;padding:10px 18px 10px 12px;background:rgba(30,20,5,.95);border:1px solid #d4af37;border-radius:10px;color:#ffd97a;font-family:var(--fd);font-size:clamp(11px,3.2vw,12px);letter-spacing:clamp(1px,0.6vw,2px);text-transform:uppercase;box-shadow:0 0 25px rgba(212,175,55,.4);text-shadow:0 0 8px rgba(255,217,122,.7);transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;white-space:normal;max-width:calc(100vw - 40px);text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+#ach-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#ach-toast .toast-icon{width:20px;height:20px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,217,122,.8));flex-shrink:0}
+#post-credits{position:absolute;inset:0;z-index:60;background:radial-gradient(circle at 50% 40%,rgba(122,77,255,.12),transparent 60%),#05050a;display:flex;align-items:center;justify-content:center;padding:calc(32px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));animation:fadeIn .9s ease;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#post-credits.hidden{display:none}
+#pc-message{font-family:var(--fd);font-size:clamp(15px,5.2vw,18px);letter-spacing:2px;color:#e8ddff;text-align:center;max-width:380px;line-height:1.6;text-shadow:0 0 6px #fff,0 0 16px var(--nc),0 0 32px var(--ng);animation:neonPulse 2.2s ease-in-out infinite alternate;white-space:pre-line}
+#pc-message.hidden{display:none}
+#pc-paper{position:relative;max-width:min(400px,calc(100vw - 32px));width:100%;padding:clamp(24px,7vw,36px) clamp(16px,5vw,28px) clamp(16px,5vw,24px);background:repeating-linear-gradient(0deg,transparent 0,transparent 31px,rgba(80,60,40,.05) 31px,rgba(80,60,40,.05) 32px),radial-gradient(circle at 20% 10%,rgba(190,160,120,.18),transparent 60%),radial-gradient(circle at 85% 90%,rgba(160,130,100,.15),transparent 65%),linear-gradient(180deg,#f6eeda 0%,#ead9bb 100%);color:#2a1f14;border-radius:3px;box-shadow:0 24px 70px rgba(0,0,0,.75),0 6px 20px rgba(0,0,0,.5),inset 0 0 60px rgba(120,90,60,.18);transform:rotate(-1.5deg);animation:paperAppear 1.4s ease}
+#pc-paper.hidden{display:none}
+@keyframes paperAppear{0%{opacity:0;transform:rotate(-1.5deg) scale(.92) translateY(30px);filter:blur(6px) brightness(1.4)}60%{opacity:1;filter:blur(2px) brightness(1.1)}100%{opacity:1;transform:rotate(-1.5deg) scale(1) translateY(0);filter:blur(0) brightness(1)}}
+#pc-paper::before,#pc-paper::after{content:'';position:absolute;left:0;right:0;height:8px;background:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.15) 2%,transparent 4%,rgba(0,0,0,.12) 8%,transparent 12%,rgba(0,0,0,.18) 22%,transparent 26%,rgba(0,0,0,.1) 40%,transparent 44%,rgba(0,0,0,.15) 58%,transparent 62%,rgba(0,0,0,.12) 78%,transparent 82%,rgba(0,0,0,.18) 94%,transparent 100%);pointer-events:none}
+#pc-paper::before{top:-4px}
+#pc-paper::after{bottom:-4px;transform:scaleY(-1)}
+.paper-text{font-family:'Caveat','Marck Script',cursive;font-size:clamp(19px,6vw,24px);line-height:1.55;color:#1a1008;margin-bottom:28px;white-space:pre-line;text-shadow:0 0 1px rgba(60,40,20,.3)}
+.paper-text .paper-sign{display:block;margin-top:14px;text-align:right;font-size:clamp(17px,5.4vw,22px);color:#5a3a20;font-weight:700}
+.paper-buttons{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px dashed rgba(80,50,30,.35)}
+.paper-buttons button{font-family:var(--fd);padding:12px 14px;background:transparent;border:1px solid rgba(80,50,30,.45);border-radius:8px;color:#3a2418;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;min-height:44px;touch-action:manipulation}
+.paper-buttons button:hover,.paper-buttons button:active{background:rgba(80,50,30,.12);border-color:#3a2418;color:#1a0f06;transform:translateY(-1px);box-shadow:0 4px 12px rgba(60,40,20,.2)}
+#refuse-report{position:absolute;inset:0;z-index:70;background:radial-gradient(circle at 50% 40%,rgba(255,40,80,.1),transparent 60%),#05050a;display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));overflow-y:auto;-webkit-overflow-scrolling:touch;animation:fadeIn .7s ease}
+#refuse-report.hidden{display:none}
+.refuse-report-title{font-family:var(--fd);font-size:clamp(13px,4.2vw,17px);letter-spacing:clamp(2px,1.2vw,4px);text-transform:uppercase;color:#ff8aa0;text-align:center;margin-bottom:14px;text-shadow:0 0 6px #fff,0 0 16px rgba(255,80,110,.7),0 0 32px rgba(255,40,80,.5);flex-shrink:0;line-height:1.3}
+.refuse-report-grid{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;margin-bottom:16px}
+.refuse-report-panel{background:rgba(15,15,25,.85);border:1px solid rgba(122,77,255,.3);border-radius:8px;padding:8px;font-size:clamp(9px,2.5vw,11px);color:#c8c8d8;line-height:1.4;display:flex;flex-direction:column;min-height:170px;max-height:280px;overflow:hidden}
+.refuse-report-panel-title{font-family:var(--fd);font-size:clamp(8px,2.3vw,10px);letter-spacing:1.4px;text-transform:uppercase;color:#b89dff;margin-bottom:6px;text-shadow:0 0 6px rgba(184,157,255,.5);flex-shrink:0;line-height:1.3}
+.refuse-report-panel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;font-size:clamp(9px,2.5vw,11px);line-height:1.45;padding-right:2px}
+.refuse-report-panel-body p{margin-bottom:6px}
+.refuse-report-left .refuse-report-panel-body{font-style:italic}
+.refuse-report-image{background-color:rgba(15,15,25,.6);background-size:cover;background-position:center;background-repeat:no-repeat;border:1px dashed rgba(122,77,255,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;min-height:170px;max-height:280px;position:relative;overflow:hidden}
+.refuse-report-image::after{content:'[ вставьте рисунок ]';font-family:var(--fd);font-size:clamp(8px,2.2vw,10px);letter-spacing:1.5px;color:rgba(184,157,255,.35);text-transform:uppercase;text-align:center;padding:8px}
+.refuse-report-image.has-image::after{display:none}
+.refuse-report-ach-item{font-size:clamp(9px,2.4vw,11px);margin-bottom:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-left:2px solid rgba(122,77,255,.4);line-height:1.3;color:#8a8a9a;font-family:var(--fd);letter-spacing:.5px}
+.refuse-report-btn{font-family:var(--fd);align-self:center;padding:14px 24px;background:rgba(20,20,35,.9);border:1px solid rgba(122,77,255,.5);border-radius:10px;color:#e8e8e8;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;text-shadow:0 0 6px rgba(184,157,255,.4);min-height:44px;min-width:200px;touch-action:manipulation;flex-shrink:0}
+.refuse-report-btn:hover,.refuse-report-btn:active{background:rgba(122,77,255,.3);border-color:#b89dff;color:#fff;box-shadow:0 0 20px rgba(122,77,255,.4)}
+.sprite[data-id="npc1"],.sprite[data-id="npc2"]{height:35%;max-height:280px}
+.sprite.fallback-human[data-id="npc1"],.sprite.fallback-human[data-id="npc2"]{width:70px;height:150px}
+@media (orientation:landscape) and (max-height:500px){
+  #dialogue-box{max-height:60dvh;padding:10px 14px 18px;min-height:80px}
+  #text{font-size:13px;line-height:1.45}
+  #speaker{font-size:11px;margin-bottom:6px}
+  .sprite{height:70%}
+  #hud{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}
+  #menu-btn{width:38px;height:38px;font-size:18px}
+  .choice-btn{padding:10px 12px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div id="game">
+
+<div id="loader">
+  <div class="loader-inner">
+    <div class="loader-title">Детектив, кот<br>и исчезнувшие дудки</div>
+    <div class="loader-status" id="loader-status">Зажигаем неон…</div>
+    <div class="loader-bar"><div class="loader-bar-fill" id="loader-fill"></div></div>
+    <div class="loader-percent" id="loader-percent">0%</div>
+  </div>
+</div>
+
+<div id="main-menu" class="hidden">
+  <div class="menu-title">Детектив<br>кот<br>и исчезнувшие дудки</div>
+  <div class="menu-sub">Кто же стоит за таинственной пропажей дудок?</div>
+  <div class="menu-buttons">
+    <button class="main-btn primary hidden" id="btn-continue">Продолжить</button>
+    <button class="main-btn" id="btn-new-game">Новая игра</button>
+    <button class="main-btn secondary" id="btn-characters">Персонажи</button>
+    <button class="main-btn secondary" id="btn-achievements-main">Достижения</button>
+    <button class="main-btn secondary" id="btn-credits">Разработчики</button>
+    <button class="main-btn danger" id="btn-refuse">Это безнадежно...</button>
+  </div>
+  <button class="reset-btn hidden" id="btn-reset">↺ Сбросить прогресс</button>
+  <div class="save-hint hidden" id="save-hint"></div>
+  <div class="menu-footer">Почти основано на реальных событиях.</div>
+</div>
+
+<header id="hud" class="hidden">
+  <div class="stat"><span class="stat-label">🧠 </span><div class="bar"><div id="clarity-fill" class="fill clarity"></div></div></div>
+  <div class="stat"><span class="stat-label">😼 </span><div class="bar"><div id="trust-fill" class="fill trust"></div></div></div>
+  <div class="stat"><span class="stat-label">💞 </span><div class="bar"><div id="affection-fill" class="fill affection"></div></div></div>
+</header>
+
+<main id="stage">
+  <div id="background"></div>
+  <div id="background-img"></div>
+  <div id="rain"></div>
+  <div id="sprites"></div>
+  <div id="dialogue-box" class="hidden"><div id="speaker"></div><div id="text"></div><div id="continue-hint">▼</div></div>
+  <div id="choices" class="hidden"></div>
+  <div id="center-card" class="hidden"><div id="center-card-text"></div></div>
+  <div id="post-credits" class="hidden">
+    <div id="pc-message" class="hidden"></div>
+    <div id="pc-paper" class="hidden">
+      <div class="paper-text" id="pc-paper-text"></div>
+      <div class="paper-buttons">
+        <button id="pc-menu-btn">В главное меню</button>
+        <button id="pc-restart-btn">Начать заново</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="refuse-report" class="hidden">
+    <div class="refuse-report-title">Город остался без защиты</div>
+    <div class="refuse-report-grid">
+      <div class="refuse-report-panel refuse-report-left">
+        <div class="refuse-report-panel-title">Экстренный репортаж</div>
+        <div class="refuse-report-panel-body">
+          <p><b>Вчера вечером</b> детектив Серёга официально отказался от расследования дела.</p>
+          <p>По словам источника, близкого к следствию, детектив сослался на «личные обстоятельства».</p>
+          <p>Мэр Берлина выразил глубокую обеспокоенность. Город остаётся без защиты.</p>
+          <p>Преступность растёт. Дождь не прекращается.</p>
+          <p><i>Кто же теперь вернёт нам дудки?</i></p>
+        </div>
+      </div>
+      <div class="refuse-report-image" id="refuse-report-image"></div>
+      <div class="refuse-report-panel refuse-report-right">
+        <div class="refuse-report-panel-title">Не получено</div>
+        <div class="refuse-report-panel-body" id="refuse-report-achievements"></div>
+      </div>
+    </div>
+    <button class="refuse-report-btn" id="refuse-report-menu-btn">В главное меню</button>
+  </div>
+</main>
+
+<button id="menu-btn" class="hidden" aria-label="Меню">≡</button>
+
+<div id="menu" class="hidden">
+  <h2>Пауза</h2>
+  <button id="achievements-btn">Достижения</button>
+  <button id="menu-restart">Новая игра</button>
+  <button id="to-main-menu">В главное меню</button>
+  <button id="close-menu">Продолжить игру</button>
+</div>
+
+<div id="achievements" class="hidden">
+  <button id="ach-close" class="close-x">×</button>
+  <h2>Достижения</h2>
+  <div class="ach-progress" id="ach-progress"></div>
+  <div id="ach-list"></div>
+</div>
+
+<div id="characters" class="hidden">
+  <button id="chars-close" class="close-x">×</button>
+  <h2>Персонажи</h2>
+  <div class="char-intro">Твои спутники в Берлине</div>
+  <div id="chars-list"></div>
+</div>
+
+<div id="credits" class="hidden">
+  <button id="credits-close" class="close-x">×</button>
+  <h2>Разработчики</h2>
+  <div class="credit-block"><div class="credit-role">Идея и сценарий</div><div class="credit-name gold">Жизнь прототипа детектива Серёги</div></div>
+  <div class="credit-block"><div class="credit-role">Программирование</div><div class="credit-name">VS Code и много кофе-колы</div></div>
+  <div class="credit-block"><div class="credit-role">Художник по котам</div><div class="credit-name purple">Филя Трошкин</div></div>
+  <div class="credit-block"><div class="credit-role">Вдохновители</div><div class="credit-name">Долгие разговоры обо всем на свете с главным героем игры + его поддержка</div></div>
+  <div class="credit-block"><div class="credit-role">Особая благодарность</div><div class="credit-name">Серенькому, который заставляет меня быть лучше и не осуждает моменты деградации и разложения 💜</div></div>
+  <div class="credit-quote">«Я верну дудки этому городу. Чего бы это ни стоило!».<div class="credit-quote-author">— Серёга, Берлин</div></div>
+  <div class="credit-footer">© 2026 · Версия 3.1</div>
+</div>
+
+<div id="confirm" class="hidden">
+  <div class="confirm-box">
+    <h3>Начать новую игру?</h3>
+    <p id="confirm-text">Прогресс и достижения будут утрачены навсегда.</p>
+    <div class="confirm-buttons">
+      <button class="confirm-yes" id="confirm-yes">ГАЗ!</button>
+      <button id="confirm-no">Эу, подожди, подожди, братишечка...</button>
+    </div>
+  </div>
+</div>
+
+<div id="ach-toast"></div>
+
+</div>
+
+<script>
+  const MENU_BG_URL='menu.png';
+const MENU_BG_DARKEN='linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.75) 100%)';
+const SAVE_KEY='mr_save',ACH_KEY='mr_achievements',UNLOCKED_KEY='mr_unlocked_chars';
+
+const ONLY_SPEAKER_VISIBLE = true;
+
+const ASSETS={
+  bg:{
+    bar:'bar.jpg',lab:'lab.jpg',void:'void.jpg',refuse:'refuse.jpg',
+    intro:'intro.jpg',hideout:'hideout.jpg',flashback:'flashback.jpg',roof:'roof.jpg',dawn:'dawn.jpg'
+  },
+  chars:{
+    mack:'Serega.PNG',filya:'IMG_4679.PNG',gromova:'ann.PNG',
+    npc1:'npc1.PNG',npc2:'npc2.PNG',villain:'Pablo.PNG'
+  },
+  icons:{unlocked:'assets/icons/unlocked.png',locked:'assets/icons/locked.png'}
+};
+
+const SPEAKER_DEFAULT_POS={mack:'left',filya:'right',gromova:'right',npc1:'right',npc2:'right',villain:'right'};
+
+const CHARACTERS=[
+  {id:'villain',name:'Агёрес',role:'Вселенское зло???',locked:true,desc:'Информации о нём крайне мало. Он появился из ниоткуда, и никто не слышал о нём до возобновления «дела». Он оставляет следы для Серёги специально — будто хочет, чтобы его поймали. Или будто хочет, чтобы Серёга вспомнил. Он мне кого-то напоминает...'},
+  {id:'mack',name:'Серёга',role:'Детектив · главный герой · надежда Берлина',locked:true,desc:'Ещё с ранних лет Серёга знал, что когда он станет взрослым, он станет известным футболистом. Но на одной из школьных тренировок ему представилась возможность увидеть в действии детектива Гонсалеза. Наблюдая за тем, как Гонсалез перекидывает злостного продавца коржиков через плечо, Серёге даже не нужно было знать, что такого сделал коржиковый продавец (он нарушил закон). Увиденное так впечатлило нашего героя, что уже в 15 лет тот стал одним из лучших детективов Берлина. Иными словами — настоящей Легендой. Но одно дело заставило нашего детектива усомниться в своей компетентности и уйти. До недавнего времени. А потом его верный напарник Филя начал вести себя очень подозрительно. Неужели это совпадение!?!?!'},
+  {id:'filya',name:'Филя',role:'Кот · напарник · телепат',locked:true,desc:'Серёга нашёл его за баром, когда тот был ещё котёнком, но уже тогда он смотрел на всех так, словно его окружают глупенькие дурачки. Филя вам не просто домашняя киса! Он самый настоящий авторитетный кот, который знает, чего он хочет от жизни. Пару месяцев назад он начал странно смотреть на Серёгу и всюду ходить за ним. Что всё это значит!?! Он явно знает больше, чем говорит Серёге... Любит коричневые камушки со вкусом рыбы.'},
+  {id:'gromova',name:'Аня',role:'Детектив · напарник · эмоции',locked:true,desc:'Она появилась в жизни Серёги внезапно, как ураганная буря непредсказуемых событий. Они напарники не слишком долго, но уже достаточно для того, чтобы понимать друг друга с полуслова. За год совместной работы они раскрыли 13 дел о пропаже, 6 дел о таинственных убийствах и 25 раз снимали котят с деревьев — это ли не показатель слаженной работы? Но в их самое первое дело, дудочное дело, она ведёт себя подозрительно. Что она скрывает?.....'},
+  {id:'npc1',name:'Зомби-учёный',role:'Свидетель · псих · скрытный',locked:true,desc:'Кажется, в прошлой жизни его звали Грэгг, и он был одним из немногих, чей уровень интеллекта был настолько высок, что не давал ему спокойно спать. Грэгг, пока он ещё был Грэггом, возглавлял группу учёных, которые пытались создать искусственные дудки. Последний их эксперимент должен был увенчаться успехом, однако Грэгг переборщил с перекисью водорода, взорвал единственную функционирующую лабораторию Берлина, а вместе с ней и своих коллег. Но чувство вины не дало ему сгореть вместе с ними — поэтому теперь Грэгг такой, какой есть, единственный в своём роде!'},
+  {id:'npc2',name:'Робот-пылесос',role:'Свидетель · милашка · экстраверт',locked:true,desc:'Самый храбрый и ответственный робот-пылесос Берлина. Агёрес купил его на распродаже сломанным. Потратив много времени на его восстановление, Агёрес не подозревал, что вложил в него СЛИШКОМ МНОГО души. Робот-пылесос долгое время наблюдал за ним и принял решение уйти — ведь теперь он личность и может сам выбирать, быть на стороне добра или на стороне зла. Эта кроха маленькая, но в ней достаточно отваги, чтобы помочь Серёге раскрыть это дело.'}
+];
+
+const achievements={
+  the_one_who_left:{title:'Тот, кто ушёл',desc:'Отказаться от игры в главном меню'},
+  meow:{title:'Хорош пить! В смысле... Мяу?',desc:'Услышать, как Филя говорит впервые'},
+  first_blood:{title:'Тут что-то не так...',desc:'Пройти Акт I'},
+  found_documents:{title:'Документы проекта',desc:'Найти папку «Проект "Пылесос"»'},
+  meet_villain:{title:'Не может быть!',desc:'Встретить Агёреса'},
+  ending_dawn:{title:'Город в дыму',desc:'Арестовать Агёреса'},
+  ending_night:{title:'Чистые лёгкие',desc:'Отпустить Агёреса'},
+  ending_dead_dawn:{title:'Ядовитый туман',desc:'Узнать правду до конца'},
+  romance_kiss:{title:'Рассвет для двоих',desc:'Поцеловать Аню на крыше'},
+  platinum:{title:'Дело раскрыто',desc:'Получить все остальные достижения'}
+};
+
+const BG_GRADIENTS={
+  bar:`radial-gradient(circle at 30% 20%,rgba(255,60,120,.15),transparent 60%),radial-gradient(circle at 80% 80%,rgba(60,120,255,.15),transparent 60%),linear-gradient(180deg,#0d0d15 0%,#1a0f1f 50%,#05050a 100%)`,
+  lab:`radial-gradient(circle at 50% 30%,rgba(120,255,180,.12),transparent 60%),radial-gradient(circle at 20% 80%,rgba(60,120,255,.1),transparent 60%),linear-gradient(180deg,#05080a 0%,#0a1518 50%,#02040a 100%)`,
+  void:`radial-gradient(circle at 50% 50%,rgba(122,77,255,.2),transparent 70%),linear-gradient(180deg,#05050a 0%,#0a0a15 100%)`,
+  refuse:`radial-gradient(circle at 50% 30%,rgba(255,40,80,.18),transparent 55%),radial-gradient(circle at 50% 90%,rgba(60,0,20,.35),transparent 65%),linear-gradient(180deg,#1a0508 0%,#0d0206 50%,#050002 100%)`,
+  intro:`radial-gradient(circle at 50% 30%,rgba(255,60,120,.16),transparent 55%),radial-gradient(circle at 30% 80%,rgba(60,60,140,.22),transparent 65%),linear-gradient(180deg,#08040f 0%,#12081c 50%,#03010a 100%)`,
+  hideout:`radial-gradient(circle at 50% 40%,rgba(255,40,60,.28),transparent 55%),radial-gradient(circle at 25% 85%,rgba(20,0,10,.7),transparent 70%),linear-gradient(180deg,#0a0205 0%,#150208 55%,#050001 100%)`,
+  flashback:`radial-gradient(circle at 50% 50%,rgba(255,220,150,.18),transparent 55%),radial-gradient(circle at 50% 50%,rgba(122,77,255,.15),transparent 70%),linear-gradient(180deg,#100820 0%,#1a0f25 50%,#08040f 100%)`,
+  roof:`radial-gradient(circle at 50% 15%,rgba(90,120,200,.22),transparent 55%),radial-gradient(circle at 30% 90%,rgba(20,20,40,.5),transparent 70%),linear-gradient(180deg,#0a0f1c 0%,#151c2e 45%,#05070d 100%)`,
+  dawn:`radial-gradient(circle at 50% 25%,rgba(255,200,120,.32),transparent 55%),radial-gradient(circle at 80% 80%,rgba(255,120,80,.22),transparent 65%),linear-gradient(180deg,#1a0e1a 0%,#3a1f2a 40%,#0a0507 100%)`
+};
+
+const state={clarity:60,trust:50,affection:40,sceneIndex:0,flags:{},unlockedChars:{},gameStarted:false,isMainStory:false,achReturnTo:'pause',confirmAction:null};
+
+const els={
+  mainMenu:document.getElementById('main-menu'),btnContinue:document.getElementById('btn-continue'),btnNewGame:document.getElementById('btn-new-game'),btnRefuse:document.getElementById('btn-refuse'),btnReset:document.getElementById('btn-reset'),btnAchMain:document.getElementById('btn-achievements-main'),btnCharacters:document.getElementById('btn-characters'),btnCredits:document.getElementById('btn-credits'),saveHint:document.getElementById('save-hint'),hud:document.getElementById('hud'),menuBtn:document.getElementById('menu-btn'),clarityFill:document.getElementById('clarity-fill'),trustFill:document.getElementById('trust-fill'),affectionFill:document.getElementById('affection-fill'),dialogueBox:document.getElementById('dialogue-box'),speaker:document.getElementById('speaker'),text:document.getElementById('text'),choices:document.getElementById('choices'),centerCard:document.getElementById('center-card'),centerCardText:document.getElementById('center-card-text'),continueHint:document.getElementById('continue-hint'),background:document.getElementById('background'),backgroundImg:document.getElementById('background-img'),sprites:document.getElementById('sprites'),menu:document.getElementById('menu'),menuRestart:document.getElementById('menu-restart'),closeMenu:document.getElementById('close-menu'),toMainMenu:document.getElementById('to-main-menu'),achBtn:document.getElementById('achievements-btn'),achScreen:document.getElementById('achievements'),achList:document.getElementById('ach-list'),achProgress:document.getElementById('ach-progress'),achClose:document.getElementById('ach-close'),charsScreen:document.getElementById('characters'),charsList:document.getElementById('chars-list'),charsClose:document.getElementById('chars-close'),credits:document.getElementById('credits'),creditsClose:document.getElementById('credits-close'),achToast:document.getElementById('ach-toast'),confirm:document.getElementById('confirm'),confirmText:document.getElementById('confirm-text'),confirmYes:document.getElementById('confirm-yes'),confirmNo:document.getElementById('confirm-no'),postCredits:document.getElementById('post-credits'),pcMessage:document.getElementById('pc-message'),pcPaper:document.getElementById('pc-paper'),pcPaperText:document.getElementById('pc-paper-text'),pcMenuBtn:document.getElementById('pc-menu-btn'),pcRestartBtn:document.getElementById('pc-restart-btn'),
+  refuseReport:document.getElementById('refuse-report'),refuseReportImage:document.getElementById('refuse-report-image'),refuseReportAch:document.getElementById('refuse-report-achievements'),refuseReportMenuBtn:document.getElementById('refuse-report-menu-btn')
+};
+
+function applyMenuBackground(){if(!MENU_BG_URL||MENU_BG_URL.trim()==='')return;els.mainMenu.style.background=`${MENU_BG_DARKEN},url("${MENU_BG_URL}") center / cover no-repeat`}
+function preloadImage(path){if(!path)return;const img=new Image();img.src=path}
+function preloadAll(){Object.values(ASSETS.bg).forEach(preloadImage);Object.values(ASSETS.chars).forEach(preloadImage);Object.values(ASSETS.icons).forEach(preloadImage);if(MENU_BG_URL)preloadImage(MENU_BG_URL)}
+function achIcon(type){const path=ASSETS.icons[type];const emoji=type==='unlocked'?'🏆':'🔒';if(!path)return emoji;return `<img src="${path}" class="ach-icon" alt="" onerror="this.outerHTML='${emoji}'">`}
+function setBackground(name){if(BG_GRADIENTS[name])els.background.style.background=BG_GRADIENTS[name];const path=ASSETS.bg[name];if(!path){els.backgroundImg.classList.remove('visible');els.backgroundImg.style.backgroundImage='';return}els.backgroundImg.style.backgroundImage=`url("${path}")`;els.backgroundImg.classList.add('visible')}
+function findBgForScene(sceneId,visited){visited=visited||new Set();if(!sceneId||visited.has(sceneId))return null;visited.add(sceneId);const node=script[sceneId];if(!node)return null;if(node.bg)return node.bg;if(node.next&&typeof node.next==='string'&&!node.next.startsWith('__')){return findBgForScene(node.next,visited)}return null}
+function getFallbackClass(id){if(id==='filya')return 'fallback-cat';if(id==='villain')return 'fallback-villain';return 'fallback-human'}
+function applySpriteImage(node,id){node.innerHTML='';node.classList.remove('fallback-cat','fallback-human','fallback-villain');const path=ASSETS.chars[id];const fb=getFallbackClass(id);if(!path){node.classList.add(fb);return}const img=document.createElement('img');img.alt='';img.decoding='async';img.onload=()=>{node.classList.remove('fallback-cat','fallback-human','fallback-villain')};img.onerror=()=>{console.warn('⚠️ Не удалось загрузить спрайт:',path);node.classList.add(fb);img.remove()};img.src=path;node.appendChild(img);if(img.complete&&img.naturalWidth>0){node.classList.remove('fallback-cat','fallback-human','fallback-villain')}else{node.classList.add(fb)}}
+function setSprites(list){list=list||[];const wanted=new Set(list.map(s=>s.id));Array.from(els.sprites.children).forEach(node=>{if(!wanted.has(node.dataset.id)){node.classList.remove('visible');setTimeout(()=>{if(!node.classList.contains('visible')&&node.parentNode){node.remove()}},800)}});list.forEach(s=>{let node=els.sprites.querySelector(`[data-id="${s.id}"]`);if(!node){node=document.createElement('div');node.className='sprite';node.dataset.id=s.id;els.sprites.appendChild(node);applySpriteImage(node,s.id)}else if(!node.querySelector('img')&&!node.classList.contains('fallback-cat')&&!node.classList.contains('fallback-human')&&!node.classList.contains('fallback-villain')){applySpriteImage(node,s.id)}node.classList.remove('pos-left','pos-center','pos-right');node.classList.add('pos-'+(s.pos||'center'));node.classList.add('visible')})}
+function highlightSpeaker(speakerClass){Array.from(els.sprites.children).forEach(node=>node.classList.remove('active'));const map={mack:'mack',filya:'filya',gromova:'gromova',npc1:'npc1',npc2:'npc2',villain:'villain'};const id=map[speakerClass];if(id){const node=els.sprites.querySelector(`[data-id="${id}"]`);if(node)node.classList.add('active')}}
+
+(function loadAchievements(){try{const saved=JSON.parse(localStorage.getItem(ACH_KEY)||'[]');saved.forEach(id=>{if(achievements[id])achievements[id].unlocked=true})}catch(e){}})();
+
+function saveUnlockedChars(){try{localStorage.setItem(UNLOCKED_KEY,JSON.stringify(state.unlockedChars))}catch(e){}}
+function loadUnlockedChars(){try{return JSON.parse(localStorage.getItem(UNLOCKED_KEY)||'{}')}catch(e){return{}}}
+function clearUnlockedChars(){try{localStorage.removeItem(UNLOCKED_KEY)}catch(e){}state.unlockedChars={}}
+
+function saveAchievementsToStorage(){try{const unlocked=Object.keys(achievements).filter(id=>achievements[id].unlocked);localStorage.setItem(ACH_KEY,JSON.stringify(unlocked))}catch(e){}checkPlatinum()}
+function clearAllAchievements(){try{localStorage.removeItem(ACH_KEY)}catch(e){}Object.keys(achievements).forEach(id=>{achievements[id].unlocked=false})}
+function checkPlatinum(){const ids=Object.keys(achievements).filter(id=>id!=='platinum');if(ids.every(id=>achievements[id].unlocked)&&!achievements.platinum.unlocked){setTimeout(()=>unlockAchievement('platinum'),500)}}
+function unlockAchievement(id){if(!achievements[id]||achievements[id].unlocked)return;achievements[id].unlocked=true;saveAchievementsToStorage();showToast(achievements[id].title);if(!els.achScreen.classList.contains('hidden'))renderAchievements()}
+function showToast(title){const path=ASSETS.icons.unlocked;const emoji='🏆';let iconHTML;if(path)iconHTML=`<img src="${path}" class="toast-icon" alt="" onerror="this.outerHTML='<span>${emoji}</span>'">`;else iconHTML=`<span>${emoji}</span>`;els.achToast.innerHTML=`${iconHTML}<span>${title}</span>`;els.achToast.classList.add('show');setTimeout(()=>els.achToast.classList.remove('show'),3000)}
+
+function renderAchievements(){els.achList.innerHTML='';let unlockedCount=0;const total=Object.keys(achievements).length;Object.keys(achievements).forEach(id=>{const a=achievements[id];if(a.unlocked)unlockedCount++;const div=document.createElement('div');div.className='ach-item '+(a.unlocked?'unlocked':'locked');const title=a.unlocked?a.title:'???';const desc=a.unlocked?a.desc:'Секретное достижение. Продолжайте играть, чтобы открыть его.';div.innerHTML=`${achIcon(a.unlocked?'unlocked':'locked')}<div class="ach-body"><div class="ach-title">${title}</div><div class="ach-desc">${desc}</div></div>`;els.achList.appendChild(div)});els.achProgress.textContent=`Открыто: ${unlockedCount} / ${total}`}
+
+function unlockChar(id){if(!id||id==='system')return;const c=CHARACTERS.find(x=>x.id===id);if(!c||!c.locked)return;if(state.unlockedChars[id])return;state.unlockedChars[id]=true;saveUnlockedChars()}
+function isCharUnlocked(id){const c=CHARACTERS.find(x=>x.id===id);if(!c)return true;if(!c.locked)return true;return state.unlockedChars[id]===true}
+
+function renderCharacters(){
+  els.charsList.innerHTML='';
+  const unlockedList = CHARACTERS.filter(c => isCharUnlocked(c.id));
+  if(unlockedList.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'char-empty';
+    empty.textContent = 'И кого, позволь узнать, ты хотел тут найти? Начни игру, чтобы открыть персонажей, неужели это так непонятно?';
+    els.charsList.appendChild(empty);
+    return;
+  }
+  unlockedList.forEach(c=>{
+    const card=document.createElement('div');card.className='char-card';
+    const portrait=document.createElement('div');portrait.className='char-portrait';
+    const path=ASSETS.chars[c.id];
+    if(path){portrait.style.backgroundImage=`url("${path}")`;const img=new Image();img.onerror=()=>{portrait.style.backgroundImage='';portrait.classList.add(getFallbackClass(c.id))};img.src=path}else{portrait.classList.add(getFallbackClass(c.id))}
+    const info=document.createElement('div');info.className='char-info';
+    info.innerHTML=`<div class="char-name ${c.id}">${c.name}</div><div class="char-role">${c.role}</div><div class="char-desc">${c.desc}</div>`;
+    card.appendChild(portrait);card.appendChild(info);els.charsList.appendChild(card);
+  });
+}
+
+function saveGame(){if(!state.gameStarted||!state.isMainStory)return;const data={sceneIndex:state.sceneIndex,clarity:state.clarity,trust:state.trust,affection:state.affection,flags:state.flags,savedAt:Date.now()};try{localStorage.setItem(SAVE_KEY,JSON.stringify(data))}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(e){return null}}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
+function formatSaveHint(save){if(!save)return'';const d=new Date(save.savedAt);const dd=String(d.getDate()).padStart(2,'0');const mm=String(d.getMonth()+1).padStart(2,'0');const hh=String(d.getHours()).padStart(2,'0');const mi=String(d.getMinutes()).padStart(2,'0');return `Сохранение от ${dd}.${mm} · ${hh}:${mi}`}
+function updateContinueUI(){
+  const save=loadSave();
+  if(save){
+    els.btnContinue.classList.remove('hidden');
+    els.btnReset.classList.remove('hidden');
+    els.saveHint.classList.remove('hidden');
+    els.saveHint.textContent=formatSaveHint(save);
+  } else {
+    els.btnContinue.classList.add('hidden');
+    els.btnReset.classList.add('hidden');
+    els.saveHint.classList.add('hidden');
+    els.saveHint.textContent='';
+  }
+}
+
+function updateStats(){els.clarityFill.style.width=state.clarity+'%';els.trustFill.style.width=state.trust+'%';els.affectionFill.style.width=state.affection+'%'}
+function changeStat(key,delta){state[key]=Math.max(0,Math.min(100,state[key]+delta));updateStats()}
+function changeAffection(delta){state.affection=Math.max(0,Math.min(100,state.affection+delta));updateStats()}
+function setFlag(name,value){state.flags[name]=value!==undefined?value:true}
+
+const script={
+
+intro_title_berlin:{bg:'intro',centerText:'Берлин, 2026 год',centerStyle:'title',next:'intro_text_1'},
+intro_text_1:{bg:'intro',centerText:'Ты Серёга, подающий большие надежды молодой детектив. Дело о пропаже дудок стало единственным твоим нераскрытым делом.',centerStyle:'intro',next:'intro_text_1b'},
+intro_text_1b:{bg:'intro',centerText:'Первое время жители пытались сплотиться и найти решение. Но всё быстро пришло в упадок: беспорядки, рост преступности, выживание. А потом появились они — люди с одинаковыми улыбками и пустыми глазами. Никто не знал, откуда они берутся.',centerStyle:'intro',next:'intro_text_2'},
+intro_text_2:{bg:'intro',centerText:'Полиция бессильна...',centerStyle:'intro',next:'intro_text_3'},
+intro_text_3:{bg:'intro',centerText:'Ты почти отчаялся докопаться до правды, пока не встретил Филю в своём любимом месте.',centerStyle:'intro',next:'intro_title_date'},
+intro_title_date:{bg:'intro',centerText:'31 октября 2026 года',centerStyle:'title',next:'start'},
+
+refuse_1:{bg:'refuse',sprites:[{id:'filya',pos:'right'}],speaker:'Филя',speakerClass:'filya',text:'Серьёзно? И ты вот так просто сдашься? Тебе даже не интересно узнать, чем закончится эта история?',next:'refuse_2'},
+refuse_2:{sprites:[{id:'filya',pos:'right'},{id:'mack',pos:'left'}],speaker:'Серёга',speakerClass:'mack',text:'Знаешь, кот, я вообще-то занятой человек. У меня нет времени на всякие игрушки!',next:'refuse_3'},
+refuse_3:{speaker:'Филя',speakerClass:'filya',text:'Да брось, мы же оба знаем, что ты просто боишься не решить эту загадку.',next:'refuse_4'},
+refuse_4:{speaker:'Серёга',speakerClass:'mack',text:'...А если и так, что с того?',next:'refuse_5'},
+refuse_5:{speaker:'Филя',speakerClass:'filya',text:'Да брось, братишечка! Вспомни былые времена, сколько преступников мы засадили в тюрьмы. Да Берлин держится исключительно на нашей работе. Но знаешь что? Иногда уйти — это тоже выбор.',next:'refuse_leave'},
+refuse_leave:{speaker:'',speakerClass:'system',text:'*Ты закрываешь дверь. Дождь остаётся снаружи. Но он всё равно будет идти. Всегда.*',next:'refuse_final'},
+refuse_final:{speaker:'',speakerClass:'system',text:'Ты отказался от правды.',next:'__refuse_report__'},
+
+start:{bg:'bar',sprites:[{id:'filya',pos:'right'}],speaker:'',speakerClass:'system',text:'Бар «Смоки-доки» — пристанище жителей трущоб и тех немногих корпоративных бедолаг, которые не смогли смириться с произошедшим. Каждый день, в одно и то же время, люди приходили сюда, вставали вокруг сцены и вспоминали...',next:'start_1'},
+start_1:{speaker:'',speakerClass:'system',text:'Дудки в Берлине стали пропадать почти незаметно. Люди не сразу поняли, что к чему, а когда поняли — было уже слишком поздно.',next:'start_2'},
+start_2:{speaker:'',speakerClass:'system',text:'Это был обычный день. Детектив Серёга раскрыл очередное дело без особого энтузиазма. Да и о каком желании работать может вообще идти речь, когда у тебя забрали твоего главного напарника (дудку, типа).',next:'start_3'},
+start_3:{speaker:'',speakerClass:'system',text:'Филя смотрел на Серёгу загадочно. Он уже четыре часа пытался придумать, как заставить его поднять что-то тяжелее стакана джина — например, собственное тело.',next:'bar_1'},
+
+bar_1:{sprites:[{id:'filya',pos:'right'},{id:'mack',pos:'left'}],speaker:'Филя',speakerClass:'filya',text:'Братишечка, ну же! Ты хоть моргни...',onEnter:()=>unlockAchievement('meow'),next:'bar_1_system'},
+bar_1_system:{speaker:'',speakerClass:'system',text:'Филя пунькнул Серёгу мягкой подушечкой своей лапки по лбу.',next:'bar_2'},
+
+bar_2:{speaker:'Серёга',speakerClass:'mack',text:'Эх, Филя, вроде столько лет уже прошло, а я всё ещё не могу забыть её... (дудку, если всё ещё не понятно!)',next:'bar_2_system'},
+bar_2_system:{speaker:'',speakerClass:'system',text:'Взгляд Серёги стал мрачнее обычного, но дверь бара скрипнула, и ему пришлось обернуться. Через секунду на его лице была смесь удивления и неуверенности в том, что то, что он видит, происходит на самом деле...',next:'bar_3'},
+
+bar_3:{speaker:'Серёга',speakerClass:'mack',text:'Что за...!?!?',next:'bar_3_system'},
+bar_3_system:{speaker:'',speakerClass:'system',text:'Как только она вошла в бар, Серёга сразу понял: эта женщина принесёт ему неприятности. Большие неприятности. Но отказать ей он не мог.',next:'bar_4'},
+
+bar_4:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'},{id:'gromova',pos:'center'}],speaker:'Аня',speakerClass:'gromova',text:'Так это ты тот самый детектив Серёга. Мои информаторы сказали, что только ты сможешь помочь мне распутать это дело.',next:'bar_4_system'},
+bar_4_system:{speaker:'',speakerClass:'system',text:'Она наклонилась и, раскрыв край пиджака, достала ПОСЛЕДНЮЮ РАБОТАЮЩУЮ ДУДКУ. Ты настолько сильно соскучился по её вкусу, что сохранить спокойствие и не вырвать дудку из рук стоило тебе ОГРОМНЫХ усилий. Однако лёгкое подёргивание глаза всё равно тебя выдало. И ещё кое-что: на корпусе дудки тускло мигнул зелёный огонёк индикатора — заряд ещё есть. А под ним, у самого основания, была едва заметная гравировка: серийный номер. Ты не придал этому значения тогда. Но запомнил.',next:'bar_5'},
+
+bar_5:{speaker:'Серёга',speakerClass:'mack',text:'С чего ты взяла, что мне есть дело до них? Пропали и пропали. Если ты решила, что я стану делать за тебя твою работу, то ты ошиблась, придя сюда.',next:'bar_6'},
+
+bar_6:{speaker:'Аня',speakerClass:'gromova',text:'Послушай! За делом с дудками стоит куда более серьёзная проблема. Мы охотились за подставным учёным с первого дня, но лишь сейчас вышли на того, кто РЕАЛЬНО за всем этим стоит. И я... я не всё тебе рассказала. Но сейчас не время. Просто поверь: это дело важнее, чем кажется.',choices:[
+  {text:'Выпить джин (−🧠)',action:()=>changeStat('clarity',-15),next:'bar_drink'},
+  {text:'Выслушать (+💞)',action:()=>changeStat('affection',+5),next:'bar_coffee'},
+  {text:'У меня есть говорящий кот (+😼)',action:()=>changeStat('trust',+15),next:'bar_feed'}
+]},
+
+bar_drink:{speaker:'Филя',speakerClass:'filya',text:'*Филя грустно посмотрел в пустую миску, явно намекая, что ты должен был сделать другой выбор. Но кого это теперь волнует.*',next:'bar_drink_2'},
+bar_drink_2:{speaker:'Аня',speakerClass:'gromova',text:'...',next:'bar_drink_3'},
+bar_drink_3:{speaker:'Филя',speakerClass:'filya',text:'Ну это казус, Серёга. После такого даже не рассчитывай на мою помощь.',next:'bar_drink_4'},
+bar_drink_4:{speaker:'Серёга',speakerClass:'mack',text:'Ты молчал 10 лет! Помолчи ещё день, хорошо?',next:'bar_drink_5'},
+bar_drink_5:{speaker:'Аня',speakerClass:'gromova',text:'Ай! Это было довольно грубо. Ну да ладно. Выслушай меня.',next:'gromova_brief'},
+
+bar_coffee:{speaker:'Серёга',speakerClass:'mack',text:'Хорошо, что там у тебя?',next:'bar_coffee_2'},
+bar_coffee_2:{speaker:'Аня',speakerClass:'gromova',text:'Как я уже сказала, вся эта история была нужна лишь для того, чтобы пустить пыль в глаза.',next:'gromova_brief'},
+
+bar_feed:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'Серёга',speakerClass:'mack',text:'Держи, братишечка. Только не хрусти так громко — у меня голова болит.',next:'bar_feed_2'},
+bar_feed_2:{speaker:'',speakerClass:'system',text:'*Он протянул Филе горсть коричневых камушков. Филя сделал вид, что не заметил. Потом заметил. Потом съел все.*',next:'bar_feed_3'},
+bar_feed_3:{speaker:'Аня',speakerClass:'gromova',text:'О! Смотрю, у вас полное взаимопонимание.',next:'bar_feed_4'},
+bar_feed_4:{speaker:'',speakerClass:'system',text:'*Аня протянула руку. Филя позволил себя погладить. Это уже само по себе событие.*',next:'bar_feed_5'},
+bar_feed_5:{speaker:'Филя',speakerClass:'filya',text:'Ну раз на меня наконец обратили внимание — слушайте внимательно. Вчера вечером я видел человека в капюшоне, стоящего в тёмном переулке. Вроде ничего необычного, но своим суперкошачьим зрением я уловил завесу дыма вокруг него!',next:'bar_feed_6'},
+bar_feed_6:{speaker:'Серёга',speakerClass:'mack',text:'Филя, ты серьёзно?',next:'bar_feed_7'},
+bar_feed_7:{speaker:'Аня',speakerClass:'gromova',text:'И это не единичный случай! По всему городу начали появляться довольные люди. ДОВОЛЬНЫЕ! Когда ты последний раз видел улыбку хоть на одном лице прохожего!?!',next:'gromova_brief'},
+
+gromova_brief:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'},{id:'gromova',pos:'center'}],speaker:'Аня',speakerClass:'gromova',text:'Пару дней назад в офис подкинули конверт с адресом. Там было и письмо. В подробности вдаваться не буду, но человек, который написал его, знает те части дела, которые не предавали огласке. Нам нужно надавить на него. Здесь в игру вступаешь ты.',next:'gromova_1'},
+
+gromova_1:{bg:'bar',sprites:[{id:'filya',pos:'right'},{id:'mack',pos:'left'},{id:'gromova',pos:'center'}],speaker:'Аня',speakerClass:'gromova',text:'Серёга, это очень рискованно, и возможно, это ловушка. Но у нас нет выбора.',next:'gromova_2'},
+gromova_2:{speaker:'Серёга',speakerClass:'mack',text:'Адрес.',next:'gromova_3'},
+gromova_3:{speaker:'Аня',speakerClass:'gromova',text:'Двор дома на пересечении Спуки-стрит и 10-й. Мы с Филей будем сразу напротив, подстрахуем, если всё пойдёт не по плану.',next:'gromova_choice'},
+
+gromova_choice:{sprites:[{id:'mack',pos:'left'},{id:'gromova',pos:'right'}],speaker:'',speakerClass:'system',text:'План. Было бы неплохо придумать план до начала операции.',choices:[
+  {text:'«Не нужен нам никакой план, импровизация — мой конёк!»',action:()=>{changeAffection(+15);setFlag('romance_opened')},next:'gromova_warm'},
+  {text:'«У меня есть план, и вы в него никак не вписываетесь»',action:()=>{changeAffection(-5)},next:'gromova_cold'}
+]},
+
+gromova_warm:{speaker:'Аня',speakerClass:'gromova',text:'Это, конечно, неплохо, но всё же. Выведи его на разговор, узнай всё, что ему известно. Нам нужно знать, где и когда объявится главное лицо в следующий раз.',next:'gromova_monologue'},
+gromova_cold:{speaker:'Аня',speakerClass:'gromova',text:'Неплохая попытка, но тебя не допустят к расследованию, если нас с котом там не будет. И раз с планом у тебя всё хорошо — выдвигаемся.',next:'gromova_monologue'},
+
+gromova_monologue:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'gromova',pos:'right'}],speaker:'Филя',speakerClass:'filya',text:'Серёга, не думаю, что у нас есть на это время. Мы можем направиться сразу в лабораторию, ту, где ты был в последний раз. Теперь нас больше — думаю, в этот раз мы точно найдём что-то полезное.',onEnter:()=>unlockAchievement('first_blood'),next:'gromova_svidetel'},
+
+gromova_svidetel:{speaker:'Аня',speakerClass:'gromova',text:'Не знаю, Филя. Вы ведь уже были в той лаборатории. Может, с информацией от свидетеля в этот раз обыск пройдёт успешнее?',next:'gromova_choice_2'},
+
+gromova_choice_2:{speaker:'',speakerClass:'system',text:'Куда идём?',choices:[
+  {text:'К свидетелю',action:()=>changeStat('clarity',+5),next:'npc1_meet'},
+  {text:'В лабораторию',action:()=>changeStat('trust',+5),next:'lab_arrival'}
+]},
+
+npc1_meet:{bg:'void',sprites:[{id:'mack',pos:'left'},{id:'npc1',pos:'right'}],speaker:'Серёга',speakerClass:'mack',text:'Я помню это место... В первый год дефицита здесь орудовали барыги. Дудки, которые они толкали, были некачественными. Люди выкладывали кругленькие суммы, а получали просто ингаляторы.',next:'npc1_talk'},
+npc1_talk:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'Эй! Что тебе нужно! Это частная территория, ВАААЛИ ОТСЮДА!',next:'npc1_approach'},
+
+npc1_approach:{speaker:'',speakerClass:'system',text:'Из тени домов на тебя бежит кривой силуэт. В руке — кирпич. Силуэт бежит, прихрамывая, и издаёт странные звуки. Ты почти уверен, что видел, как от него оторвался кусок.',choices:[
+  {text:'Выстрелить',action:()=>changeStat('clarity',+10),next:'npc1_shoot_1'},
+  {text:'Убежать',action:()=>{changeStat('trust',-10);changeStat('clarity',+5)},next:'npc1_run_1'},
+  {text:'Стоять неподвижно',action:()=>changeStat('trust',+10),next:'npc1_wait_start'}
+]},
+
+npc1_shoot_1:{speaker:'Серёга',speakerClass:'mack',text:'Стоять!',next:'npc1_shoot_2'},
+npc1_shoot_2:{speaker:'',speakerClass:'system',text:'*Выстрел. Эхо разносится по переулку.*',next:'npc1_shoot_3'},
+npc1_shoot_3:{speaker:'',speakerClass:'system',text:'*Агрессивная тень падает, кирпич отлетает в сторону. В другую сторону летит... ещё один кирпич?*',next:'npc1_shoot_4'},
+npc1_shoot_4:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'Аааа нееет! Моя нога! Я же просто припугнуть хотел!',next:'npc1_shoot_5'},
+npc1_shoot_5:{speaker:'Серёга',speakerClass:'mack',text:'Ты что вообще такое!?',next:'npc1_shoot_6'},
+npc1_shoot_6:{speaker:'',speakerClass:'system',text:'*На груди у него поблёскивает пластиковая карта с логотипом лаборатории. Ты снимаешь её.*',next:'npc1_shoot_7'},
+npc1_shoot_7:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'Эй, отдай! Это пропуск! В лабораторию!',next:'npc1_shoot_8'},
+npc1_shoot_8:{speaker:'Серёга',speakerClass:'mack',text:'Не думаю, что он тебе теперь понадобится. Чао-какао.',next:'npc1_shoot_9'},
+npc1_shoot_9:{speaker:'',speakerClass:'system',text:'*Из-за угла выныривают Аня и Филя. Оба слышали выстрел.*',next:'npc1_shoot_10'},
+npc1_shoot_10:{speaker:'Филя',speakerClass:'filya',text:'Братишечка, а ты умеешь быть убедительным, когда не спишь в стакане.',next:'npc1_shoot_11'},
+npc1_shoot_11:{speaker:'Аня',speakerClass:'gromova',text:'А ты не пробовал использовать слова для ведения переговоров?',next:'npc1_shoot_12'},
+npc1_shoot_12:{speaker:'Серёга',speakerClass:'mack',text:'Словами я не достал бы это! *Грациозно предъявил ключ-карту*.',next:'npc1_shoot_13'},
+npc1_shoot_13:{speaker:'Аня',speakerClass:'gromova',text:'Тогда не будем терять время. В лабораторию. Сейчас же.',next:'lab_arrival'},
+
+npc1_run_1:{speaker:'',speakerClass:'system',text:'*Ты разворачиваешься и бежишь. Ветки хлещут по лицу, лужи обдают грязью. А тень стоит в недоумении и смотрит, как ты исчезаешь в тумане. Возможно, ей просто нужен был друг. Но очевидно, это не ты!*',next:'npc1_run_2'},
+npc1_run_2:{speaker:'Серёга',speakerClass:'mack',text:'Дыхалка... уже не та...',next:'npc1_run_3'},
+npc1_run_3:{speaker:'',speakerClass:'system',text:'*Пять кварталов. Десять.*',next:'npc1_run_4'},
+npc1_run_4:{bg:'lab',speaker:'',speakerClass:'system',text:'*Ты останавливаешься напротив ржавого ангара. Сердце колотится где-то в горле.*',next:'npc1_run_5'},
+npc1_run_5:{speaker:'',speakerClass:'system',text:'*Сзади визжат шины. Знакомая машина.*',next:'npc1_run_6'},
+npc1_run_6:{speaker:'Аня',speakerClass:'gromova',text:'Ты же понимаешь, что мы могли сюда просто доехать?',next:'npc1_run_7'},
+npc1_run_7:{speaker:'Серёга',speakerClass:'mack',text:'Я не ищу лёгких путей.',next:'npc1_run_8'},
+npc1_run_8:{speaker:'Филя',speakerClass:'filya',text:'Чувак, теперь я тебя боюсь. Впечатляет.',next:'npc1_run_9'},
+npc1_run_9:{speaker:'Аня',speakerClass:'gromova',text:'Мы на месте. Заходим.',next:'lab_arrival'},
+
+npc1_wait_start:{speaker:'',speakerClass:'system',text:'*Тень подбегает вплотную... и резко останавливается. Кирпич с грохотом падает на асфальт.*',next:'npc1_wait_start_2'},
+npc1_wait_start_2:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'Серёга???? Святые дудки, это правда ты!',next:'npc1_info'},
+
+npc1_info:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'У нас мало времени, они уже идут за мной, но послушай. Агёрес заправляет всем из своего логова. И нет, я понятия не имею, где оно находится. Но я знаю: завтра он запускает проект «Засуха». Пропажа дудок — простой ход для установления контроля. И ещё... ты был там, Серёга. В школе. В ту ночь. Ты просто не помнишь.',next:'npc1_warn'},
+npc1_warn:{speaker:'Зомби-учёный',speakerClass:'npc1',text:'Отправляйся в лабораторию, детектив. Этот ключ даст тебе доступ к документам проекта. Там ты найдёшь ответы. И ещё... он знает про кота. Будь осторожен.',next:'npc1_wait_1'},
+
+npc1_wait_1:{speaker:'',speakerClass:'system',text:'*Ты киваешь и уходишь. Учёный что-то бормочет вслед про перекись и судьбу.*',next:'npc1_wait_2'},
+npc1_wait_2:{speaker:'Серёга',speakerClass:'mack',text:'Спасибо. Наверное.',next:'npc1_wait_3'},
+npc1_wait_3:{speaker:'',speakerClass:'system',text:'*Аня и Филя ждут тебя за углом. Филя недовольно машет хвостом.*',next:'npc1_wait_4'},
+npc1_wait_4:{speaker:'Аня',speakerClass:'gromova',text:'Ну наконец-то. Что он сказал?',next:'npc1_wait_5'},
+npc1_wait_5:{speaker:'Серёга',speakerClass:'mack',text:'Он знает не больше нас, но он дал мне ключ. Скорее, нам нужно в лабораторию.',next:'npc1_wait_6'},
+npc1_wait_6:{speaker:'Аня',speakerClass:'gromova',text:'Ключ?! И всё? Не очень-то полезный свидетель.',next:'lab_arrival'},
+
+lab_arrival:{bg:'lab',sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'Серёга',speakerClass:'mack',text:'Лаборатория. Ржавая крыша. Дождь бьёт по железу, как по барабану.',next:'lab_1'},
+lab_1:{speaker:'Филя',speakerClass:'filya',text:'Здесь пахнет перекисью. И чем-то ещё. Знакомым.',next:'lab_2'},
+lab_2:{speaker:'Серёга',speakerClass:'mack',text:'Не может быть! Дудка!',next:'lab_3'},
+lab_3:{speaker:'',speakerClass:'system',text:'Этот запах ты узнаешь из тысячи других. Твои глаза быстро нашли источник аромата. Под куполом на витрине лежала она — герметично закрытая, образца 2015 года. В этот момент ты испытал истинное счастье. Испытал бы. Но эта витрина пережила взрыв. Думаешь, ты правда сможешь её открыть?',next:'lab_body_choice'},
+
+lab_body_choice:{speaker:'',speakerClass:'system',text:'Ты подошёл ближе.',choices:[
+  {text:'Попытаться вскрыть витрину',action:()=>changeStat('clarity',+10),next:'lab_pry_1'},
+  {text:'Попросить Филю о помощи',action:()=>{changeStat('trust',+15);changeStat('clarity',-5)},next:'lab_filya_1'}
+]},
+
+lab_pry_1:{speaker:'Серёга',speakerClass:'mack',text:'Ну давай, старушка, поддайся...',next:'lab_pry_2'},
+lab_pry_2:{speaker:'',speakerClass:'system',text:'*Ты дёргаешь замок. Ещё раз. Сильнее. Замок хрустит и окончательно заедает — теперь его не открыть ничем.*',next:'lab_pry_3'},
+lab_pry_3:{speaker:'Серёга',speakerClass:'mack',text:'...НЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕТ!!!!!!!!!',next:'lab_pry_4'},
+lab_pry_4:{speaker:'',speakerClass:'system',text:'*Дудка остаётся за стеклом — навсегда.*',next:'lab_pry_5'},
+lab_pry_5:{speaker:'',speakerClass:'system',text:'*Ты отходишь от витрины. Твоё сердце разбито, по щеке катится скупая мужская слеза. Падая на пол, она издаёт загадочное сияние. Ты присматриваешься и определяешь источник света.*',next:'lab_4'},
+
+lab_filya_1:{speaker:'Серёга',speakerClass:'mack',text:'Братишечка, выручай.',next:'lab_filya_2'},
+lab_filya_2:{speaker:'',speakerClass:'system',text:'*Филя подходит к витрине, задумчиво смотрит на замок. Один лёгкий удар лапкой — щелчок, и дверца открывается.*',next:'lab_filya_3'},
+lab_filya_3:{speaker:'Филя',speakerClass:'filya',text:'Профессионал.',next:'lab_filya_4'},
+lab_filya_4:{speaker:'',speakerClass:'system',text:'*Ты открываешь витрину и достаёшь дудку. Она в идеальном состоянии.*',next:'lab_filya_5'},
+lab_filya_5:{speaker:'',speakerClass:'system',text:'*Ты затягиваешься. Дым заполняет лёгкие. И тут...*',next:'lab_filya_6'},
+lab_filya_6:{speaker:'Серёга',speakerClass:'mack',text:'...ДА! Я ПОНЯЛ! Я ЗНАЮ ОТВЕТ!',next:'lab_filya_after_high'},
+lab_filya_after_high:{speaker:'',speakerClass:'system',text:'*Дым рассеивается. И вместе с ним — пелена перед глазами. Ты обводишь лабораторию взглядом и замечаешь на столе пожелтевший лист, подсвеченный тусклой лампой.*',next:'lab_filya_after_high_2'},
+lab_filya_after_high_2:{speaker:'Серёга',speakerClass:'mack',text:'Филя, глянь-ка сюда.',next:'lab_note'},
+
+lab_4:{speaker:'Серёга',speakerClass:'mack',text:'Вон там! Филя, скорее!',next:'lab_5'},
+lab_5:{speaker:'Филя',speakerClass:'filya',text:'*Филя перехватил твой взгляд. Через секунду он уже сидел на крутящемся кресле.*',next:'lab_note'},
+lab_note:{speaker:'',speakerClass:'system',text:'31 октября 2026. Проект «Засуха». Стадия F. Старый особняк. — А. Этот документ лежит здесь уже очень давно. Но ты знаешь место, о котором идёт речь.',next:'lab_folder'},
+lab_folder:{speaker:'Серёга',speakerClass:'mack',text:'Да здесь же вся информация по проекту! Что за придурок оставляет такие вещи в полуразрушенных легкодоступных помещениях!.. Дудки... бла-бла... запуск системы контроля разума... бла-бла... ПРЕКРАЩЕНИЕ ПРОИЗВОДСТВА ОРИГИНАЛЬНОГО БЕРЛИНА!?!? НУ ЭТО УЖЕ НИ В КАКИЕ ВОРОТА! И... стоп. Фаза 0. Школа №67. Это... это же моя школа. Список детей. Тринадцать имён. Моё — третье. И подпись научного руководителя — Грэгг. Учитель химии. Тот самый сумасшедший из переулка.',onEnter:()=>unlockAchievement('found_documents'),next:'lab_children'},
+lab_children:{speaker:'Филя',speakerClass:'filya',text:'Скажи, что ты прикалываешься. Прошу тебя.',next:'lab_children_2'},
+lab_children_2:{speaker:'Серёга',speakerClass:'mack',text:'Братишечка, теперь мы должны остановить его во что бы то ни стало!',next:'lab_silence'},
+lab_silence:{speaker:'Филя',speakerClass:'filya',text:'Серёга... Я хочу сказать тебе что-то. Но не сейчас. Позже.',next:'lab_silence_2'},
+lab_silence_2:{speaker:'Серёга',speakerClass:'mack',text:'Филя?',next:'lab_silence_3'},
+lab_silence_3:{speaker:'Филя',speakerClass:'filya',text:'Позже. Идём.',next:'lab_press_choice'},
+
+lab_press_choice:{speaker:'',speakerClass:'system',text:'Филя явно что-то скрывает. Надавить сейчас — или дать ему время?',choices:[
+  {text:'Настоять на ответе',action:()=>{changeStat('clarity',+10);changeStat('trust',-15)},next:'lab_press_pushed'},
+  {text:'Дать время',action:()=>changeStat('trust',+20),next:'gromova_call_after_lab'}
+]},
+
+lab_press_pushed:{speaker:'Серёга',speakerClass:'mack',text:'Нет, Филя. Хватит. Ты что-то знаешь — и я хочу услышать это сейчас.',next:'lab_press_pushed_2'},
+lab_press_pushed_2:{speaker:'',speakerClass:'system',text:'*Филя медленно обернулся. Хвост дёрнулся. Взгляд стал холоднее, чем обычно.*',next:'lab_press_pushed_3'},
+lab_press_pushed_3:{speaker:'Филя',speakerClass:'filya',text:'Серёга, всё не так просто. Я хотел бы тебе рассказать, но не могу.',next:'lab_press_pushed_4'},
+lab_press_pushed_4:{speaker:'Серёга',speakerClass:'mack',text:'Филя...',next:'lab_press_pushed_5'},
+lab_press_pushed_5:{speaker:'Филя',speakerClass:'filya',text:'Нет.',next:'gromova_call_after_lab'},
+
+gromova_call_after_lab:{bg:'lab',sprites:[{id:'mack',pos:'left'},{id:'gromova',pos:'right'}],speaker:'',speakerClass:'system',text:'*Ты берёшь документы проекта и идёшь к Ане.*',next:'gromova_after_lab_1'},
+gromova_after_lab_1:{speaker:'Аня',speakerClass:'gromova',text:'Что ты нашёл?',next:'gromova_after_lab_choice'},
+gromova_after_lab_choice:{speaker:'',speakerClass:'system',text:'Ты сомневаешься.',choices:[
+  {text:'Здесь вся информация. Все стадии проекта и дальнейшие планы на этот город.',action:()=>{changeAffection(+15)},next:'gromova_after_lab_warm'},
+  {text:'У меня есть адрес логова.',action:()=>{changeAffection(-5)},next:'gromova_after_lab_cold'}
+]},
+gromova_after_lab_warm:{speaker:'Аня',speakerClass:'gromova',text:'*Листает* Это замечательно! Теперь мы можем его взять! Серёга... ты сделал то, чего не смог ни один коп в городе!',next:'gromova_after_lab_end'},
+gromova_after_lab_cold:{speaker:'Аня',speakerClass:'gromova',text:'Ну, уже что-то.',next:'gromova_after_lab_end'},
+gromova_after_lab_end:{speaker:'Серёга',speakerClass:'mack',text:'Кстати, насчёт проекта...',next:'npc2_meet'},
+
+npc2_meet:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'npc2',pos:'right'}],speaker:'',speakerClass:'system',text:'Из тени медленно выезжает маленький белый кружочек, горящий, словно новогодняя ёлка.',next:'npc2_talk'},
+npc2_talk:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'Вы его ищете. Агёреса. Я знаю, зачем вы здесь.',next:'npc2_talk_2'},
+npc2_talk_2:{speaker:'Серёга',speakerClass:'mack',text:'Что ты такое, малыш?',next:'npc2_talk_3'},
+npc2_talk_3:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'О, я та, кто знает о нём даже больше, чем он сам. У нас с ним очень длинная история. Она начинается в день, когда он купил меня на гаражной распродаже 20 лет назад. Он тогда был другим. Испуганным мальчиком, который пытался спасти то, что осталось от его семьи. Но потом он сломался. И решил, что единственный способ победить систему — стать её частью.',next:'npc2_trust_choice'},
+npc2_trust_choice:{speaker:'',speakerClass:'system',text:'3 часа спустя...',choices:[
+  {text:'Поверить ей',action:()=>{changeStat('clarity',+10);changeStat('trust',+5)},next:'npc2_trust_believe'},
+  {text:'Усомниться',action:()=>changeStat('trust',-10),next:'npc2_trust_doubt'}
+]},
+npc2_trust_believe:{speaker:'Серёга',speakerClass:'mack',text:'Знаешь, а в твоей истории что-то есть. Я тебе верю, малыш.',next:'npc2_talk_4'},
+npc2_trust_doubt:{speaker:'Серёга',speakerClass:'mack',text:'Извини, но звучит как бред. С чего вдруг я должен верить говорящему пылесосу?',next:'npc2_trust_doubt_2'},
+npc2_trust_doubt_2:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'*Робот обиженно пискнул* Я не обязана ничего доказывать. Но всё равно помогу. Потому что иначе — никак.',next:'npc2_talk_4'},
+npc2_talk_4:{speaker:'Филя',speakerClass:'filya',text:'*Филя сладко дремал на роботе, пока тот рассказывал свою историю*',next:'npc2_talk_5'},
+npc2_talk_5:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'Вот поэтому, Серёга, ты должен его остановить. И я помогу тебе в этом.',next:'npc2_reveal'},
+npc2_reveal:{speaker:'Серёга',speakerClass:'mack',text:'Как нам это сделать?',next:'npc2_reveal_2'},
+npc2_reveal_2:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'Возьми это. *выталкивает из угла маленькую коробочку*',next:'npc2_reveal_3'},
+npc2_reveal_3:{speaker:'Серёга',speakerClass:'mack',text:'Что там?',next:'npc2_reveal_4'},
+npc2_reveal_4:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'Когда будешь готов — открой её. Но сделать это нужно именно тогда, когда встретишь Агёреса.',next:'npc2_reveal_5'},
+npc2_reveal_5:{speaker:'Робот-пылесос',speakerClass:'npc2',text:'Больше я ничем тебе помочь не смогу, Серёга. Теперь всё зависит от тебя.',next:'npc2_reveal_choice'},
+npc2_reveal_choice:{speaker:'',speakerClass:'system',text:'Пылесос бибикнул, напоминая Филе, что пришло время проснуться, и уехал в тень, когда кот спрыгнул.',choices:[
+  {text:'Это бред',action:()=>changeStat('clarity',-10),next:'npc2_reveal_bred'},
+  {text:'Филя?',action:()=>{changeStat('clarity',+10);changeStat('trust',+10)},next:'npc2_reveal_filya'}
+]},
+npc2_reveal_bred:{speaker:'Серёга',speakerClass:'mack',text:'Коробочка, кодовое слово... Чушь какая-то. Я в сказку попал?',next:'npc2_glance'},
+npc2_reveal_filya:{speaker:'Серёга',speakerClass:'mack',text:'Филя. Ты знаешь, что в этой коробке?',next:'npc2_glance'},
+npc2_glance:{speaker:'',speakerClass:'system',text:'Филя задумчиво смотрел вдаль, словно хотел тебе что-то сказать...',next:'npc2_end'},
+npc2_end:{speaker:'Серёга',speakerClass:'mack',text:'...',next:'flashback_1'},
+
+flashback_1:{bg:'flashback',sprites:[{id:'filya',pos:'right'}],speaker:'Филя',speakerClass:'filya',text:'Впервые я увидел его там. В школе №67, когда её закрыли.',next:'flashback_2'},
+flashback_2:{speaker:'Серёга',speakerClass:'mack',text:'Я помню её. Я учился там. Но почему он выбрал именно это место?',next:'flashback_3'},
+flashback_3:{speaker:'',speakerClass:'system',text:'Серёга забыл, но Агёрес был его одноклассником. Он сидел за последней партой и проучился с Серёгой четыре года — до того самого случая.',next:'flashback_4'},
+flashback_4:{speaker:'',speakerClass:'system',text:'Это было довольно громкое дело. Все жители города знали о произошедшем. Но каким-то образом участие Агёреса в этом деле стёрли из памяти людей. Как и участие самого Серёги. Но почему?',next:'flashback_5'},
+flashback_5:{speaker:'',speakerClass:'system',text:'Поэтому ты забыл о нём. Ведь на следующий день он бесследно исчез, а все воспоминания о нём растворились в дудочном дыму.',next:'flashback_6'},
+flashback_6:{speaker:'',speakerClass:'system',text:'Мало кто связывает два этих события, но на самом деле случай в школе стал первой причиной исчезновения дудок. Ты был там, Серёга. Ты был одним из них.',next:'wake_up'},
+wake_up:{bg:'lab',sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'Серёга',speakerClass:'mack',text:'...Филя?',next:'wake_up_2'},
+wake_up_2:{speaker:'Филя',speakerClass:'filya',text:'Я помню это очень хорошо. Ведь я был там в тот день.',next:'wake_up_3'},
+wake_up_3:{speaker:'Серёга',speakerClass:'mack',text:'Почему ты молчал всё это время?',next:'wake_up_4'},
+wake_up_4:{speaker:'Филя',speakerClass:'filya',text:'Я сомневался, стоит ли говорить об этом.',next:'roof_scene_1'},
+
+roof_scene_1:{bg:'roof',sprites:[{id:'mack',pos:'left'},{id:'gromova',pos:'right'}],speaker:'',speakerClass:'system',text:'Крыша. Ветер. Дождь на секунду стих. Аня стоит у края, спиной к городу.',next:'roof_scene_2'},
+roof_scene_2:{speaker:'Аня',speakerClass:'gromova',text:'Я знала, что ты придёшь сюда. Ты всегда приходишь сюда, когда не знаешь, что делать. Как в ту ночь.',next:'roof_scene_3'},
+roof_scene_3:{speaker:'Серёга',speakerClass:'mack',text:'Ты следила за мной?',next:'roof_scene_4'},
+roof_scene_4:{speaker:'Аня',speakerClass:'gromova',text:'Семь лет. С тех пор, как ты ушёл из полиции. И с тех пор, как я узнала, что случилось в школе. Я была там, Серёга. Я видела, что они сделали с вами.',next:'roof_scene_5'},
+roof_scene_5:{speaker:'Серёга',speakerClass:'mack',text:'Я совершенно запутался. Агёрес. Дудки. Школа. Какая связь между всем этим?',next:'roof_scene_6'},
+roof_scene_6:{speaker:'Аня',speakerClass:'gromova',text:'Ты знаешь, Серёга. Ты просто забыл. Тебе лишь нужно проникнуть в чертоги разума.',next:'roof_scene_7'},
+roof_scene_7:{speaker:'',speakerClass:'system',text:'Пауза. Ветер снова приносит дождь.',next:'roof_scene_choice'},
+
+roof_scene_choice:{speaker:'',speakerClass:'system',text:'Она стоит очень близко. Ты можешь сделать шаг.',choices:[
+  {text:'Обнять её',action:()=>{changeAffection(+25);setFlag('kissed',true);unlockAchievement('romance_kiss')},next:'roof_kiss'},
+  {text:'Отступить',action:()=>{changeAffection(-15);changeStat('clarity',+10)},next:'roof_step_back'},
+  {text:'Сказать «Не сейчас»',action:()=>changeAffection(-5),next:'roof_not_now'}
+]},
+
+roof_kiss:{speaker:'',speakerClass:'system',text:'Она не отстраняется. Её руки в карманах плаща, дождь стучит по железу. Никто из вас ничего не говорит.',next:'roof_kiss_2'},
+roof_kiss_2:{speaker:'Аня',speakerClass:'gromova',text:'Ещё есть время. Мы можем сбежать вдвоём. Только ты и я.',next:'roof_final'},
+
+roof_step_back:{speaker:'',speakerClass:'system',text:'*Ты делаешь шаг назад. Один. Другой. Аня не двигается с места.*',next:'roof_step_back_2'},
+roof_step_back_2:{speaker:'Аня',speakerClass:'gromova',text:'...Вот как. Значит, всё-таки отступаешь.',next:'roof_step_back_3'},
+roof_step_back_3:{speaker:'Серёга',speakerClass:'mack',text:'Аня, я не могу. Не так. Не сейчас.',next:'roof_step_back_4'},
+roof_step_back_4:{speaker:'Аня',speakerClass:'gromova',text:'Я знала. Просто... надеялась, что хоть в этот раз ты не сбежишь.',next:'roof_step_back_5'},
+roof_step_back_5:{speaker:'',speakerClass:'system',text:'*Она отворачивается к городу. Плечи напряжены. Дождь усиливается.*',next:'roof_step_back_6'},
+roof_step_back_6:{speaker:'Аня',speakerClass:'gromova',text:'Иди уже, детектив. У нас есть работа.',next:'roof_final'},
+
+roof_not_now:{speaker:'Серёга',speakerClass:'mack',text:'Не сейчас, Аня. Прости. Не сейчас.',next:'roof_not_now_2'},
+roof_not_now_2:{speaker:'',speakerClass:'system',text:'*Она замирает. Секунду. Две. Потом медленно кивает.*',next:'roof_not_now_3'},
+roof_not_now_3:{speaker:'Аня',speakerClass:'gromova',text:'Понимаю. Правда, понимаю.',next:'roof_not_now_4'},
+roof_not_now_4:{speaker:'Серёга',speakerClass:'mack',text:'Дело не в тебе...',next:'roof_not_now_5'},
+roof_not_now_5:{speaker:'Аня',speakerClass:'gromova',text:'Не надо. Не оправдывайся. Я же сказала — понимаю.',next:'roof_not_now_6'},
+roof_not_now_6:{speaker:'',speakerClass:'system',text:'*Она делает вид, что всё в порядке. Но руки в карманах сжаты в кулаки.*',next:'roof_not_now_7'},
+roof_not_now_7:{speaker:'Аня',speakerClass:'gromova',text:'Идём. Агёрес ждать не будет.',next:'roof_final'},
+
+roof_final:{speaker:'Серёга',speakerClass:'mack',text:'Мы должны раскрыть это дело.',next:'gromova_call_2'},
+
+gromova_call_2:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'gromova',pos:'right'}],speaker:'Аня',speakerClass:'gromova',text:'Ну же, Серёга, Агёрес ждёт. Мы с Филей подстрахуем. И помни: он не должен знать, что мы там будем. Теперь успех операции полностью в твоих руках.',next:'gromova_call_3'},
+gromova_call_3:{speaker:'Серёга',speakerClass:'mack',text:'Иду.',next:'gromova_call_4'},
+gromova_call_4:{speaker:'Аня',speakerClass:'gromova',text:'Серёга. Что бы он тебе ни сказал — не верь ему.',next:'gromova_call_5'},
+gromova_call_5:{speaker:'Серёга',speakerClass:'mack',text:'Я знаю, кому верить.',next:'hideout_arrival'},
+
+hideout_arrival:{bg:'hideout',sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'',speakerClass:'system',text:'Старый особняк на холме. Сырость. Тьма. Только свечи вдоль стен. А у этого парня отличный вкус.',next:'hideout_arrival_2'},
+hideout_arrival_2:{speaker:'Филя по рации',speakerClass:'filya',text:'Здесь он. Чувствую. Он ждал тебя давно.',next:'hideout_arrival_3'},
+hideout_arrival_3:{speaker:'Серёга',speakerClass:'mack',text:'Ну, погнали.',next:'pablo_meet'},
+pablo_meet:{bg:'hideout',sprites:[{id:'mack',pos:'left'},{id:'villain',pos:'right'}],speaker:'',speakerClass:'system',text:'Агёрес стоит в центре. В руках — дудка. И она работает!',next:'pablo_meet_2'},
+pablo_meet_2:{speaker:'Агёрес',speakerClass:'villain',text:'Здравствуй, Серёга. Долго же ты шёл. Десять лет.',onEnter:()=>unlockAchievement('meet_villain'),next:'pablo_meet_3'},
+pablo_meet_3:{speaker:'Серёга',speakerClass:'mack',text:'Агёрес?',next:'pablo_meet_4'},
+pablo_meet_4:{speaker:'Агёрес',speakerClass:'villain',text:'Не надеюсь, что ты помнишь меня. Скорее всего, ты узнал моё имя из старых документов в лаборатории. Да, я знаю, что вы были там. Надеюсь, ты пришёл один?',next:'pablo_meet_5'},
+pablo_meet_5:{speaker:'Серёга',speakerClass:'mack',text:'*Блеф* Пф, ещё бы.',next:'pablo_meet_choice'},
+pablo_meet_choice:{speaker:'',speakerClass:'system',text:'Прозвучало не слишком уверенно, но, похоже, Агёрес тебе поверил.',choices:[
+  {text:'Выслушать Агёреса',action:()=>changeStat('clarity',+10),next:'pablo_listen'},
+  {text:'Наброситься',action:()=>{changeStat('clarity',-10);changeStat('trust',-10)},next:'pablo_attack'},
+  {text:'Смотреть молча',action:()=>changeStat('trust',+5),next:'pablo_silent'}
+]},
+pablo_listen:{speaker:'',speakerClass:'system',text:'*Ты не двигаешься с места. Слова застревают в горле. Слишком много вопросов — и ни одного правильного.*',next:'pablo_meet_6'},
+pablo_attack:{speaker:'',speakerClass:'system',text:'*Ты бросаешься вперёд — и тут же натыкаешься на холодную стену. Агёрес даже не пошевелился. Свечи дрогнули от сквозняка.*',next:'pablo_meet_6'},
+pablo_silent:{speaker:'',speakerClass:'system',text:'*Ты стоишь и смотришь. Просто смотришь. Иногда это лучший разговор.*',next:'pablo_meet_6'},
+pablo_meet_6:{speaker:'Агёрес',speakerClass:'villain',text:'Ещё когда мы учились в школе, я знал, что на дудках можно построить целую империю. Поэтому каждый день после занятий я ходил по классам и собирал весь мел, что там был. Ты спросишь, как связаны мел и дудки? Что ж, полагаю, ты не вспомнил Грэгга. Да, Грэгг был нашим учителем.',next:'pablo_talk_1'},
+pablo_talk_1:{speaker:'Агёрес',speakerClass:'villain',text:'Уже тогда Грэгг подавал большие надежды в химии. У нас появилась идея: бесконечные дудки. Ты только представь! Их не нужно заправлять, потому что в составе — мел. Ты просто вставляешь мелок, и она служит тебе годами. Да, план неидеален — нужно было добавлять мел, — но мы бы придумали, как это исправить!',next:'pablo_talk_2'},
+pablo_talk_2:{speaker:'Серёга',speakerClass:'mack',text:'«Мел? Грэгг? Подожди... Так ты хочешь сказать, что мы учились вместе? И Грэгг — это тот самый сумасшедший из переулка?»',next:'pablo_talk_3'},
+pablo_talk_3:{speaker:'Агёрес',speakerClass:'villain',text:'В ту ночь в школе мы провели наш первый и последний неудачный опыт. Школьная лаборатория была уничтожена, но мы получили то, что хотели. Опытный образец! Десять наших одноклассников протестировали его, но, увы, эксперимент провалился. Нам пришлось бежать — общественность подняла шумиху.',next:'pablo_talk_choice'},
+pablo_talk_choice:{speaker:'',speakerClass:'system',text:'Ты начал вспоминать.',choices:[
+  {text:'Признать, что помнишь',action:()=>{changeStat('clarity',-5);changeStat('trust',+10)},next:'pablo_talk_accept'},
+  {text:'Отрицать',action:()=>changeStat('clarity',+10),next:'pablo_talk_deny'}
+]},
+pablo_talk_accept:{speaker:'Серёга',speakerClass:'mack',text:'«Это настоящее безумие... Ты безумен! Но я... я и правда начинаю вспоминать.»',next:'pablo_project'},
+pablo_talk_deny:{speaker:'Серёга',speakerClass:'mack',text:'«Я ничего не помню про мел и школу. Но почему ты не оставил попытки после провала? И зачем вернулся именно сейчас, 10 лет спустя?»',next:'pablo_project'},
+pablo_project:{speaker:'Агёрес',speakerClass:'villain',text:'Проект «Засуха» нельзя просто остановить. Слишком много стоит на кону! И твоя напарница знает об этом больше, чем говорит. Спроси её как-нибудь.',next:'pablo_project_2'},
+pablo_project_2:{speaker:'Серёга',speakerClass:'mack',text:'«Допустим. Но для чего вся эта секретность? Ты можешь просто выйти на рынок с новым продуктом — легально, без всей этой возни.»',next:'pablo_project_3'},
+pablo_project_3:{speaker:'Агёрес',speakerClass:'villain',text:'ХА-ХА-ХА, Серёга, да ты не видишь дальше собственного носа! Зачем мне раскрывать все карты сразу? Главная цель моих дудок — захват мира!',next:'pablo_reveal'},
+pablo_reveal:{speaker:'Серёга',speakerClass:'mack',text:'«ЧЕГО!?»',next:'pablo_reveal_2'},
+pablo_reveal_2:{speaker:'Агёрес',speakerClass:'villain',text:'Нас больше, чем двое, Серёга. Гораздо больше. Мы ждали много лет, мы прятались в тени. И теперь мы готовы. Сначала Берлин — потом весь мир.',next:'filya_confess'},
+filya_confess:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'villain',pos:'right'}],speaker:'Филя по рации',speakerClass:'filya',text:'Серёга, вызывай подкрепление, мы должны его повязать. Сейчас!',next:'pablo_confirm'},
+pablo_confirm:{speaker:'Агёрес',speakerClass:'villain',text:'Давай, Серёга, пойдём со мной. Ты можешь править этим миром вместе с нами. Твои мозги плюс моя решимость — поверь, это лучшее, что могло бы быть с этим миром!',next:'pablo_confirm_2'},
+pablo_confirm_2:{speaker:'Серёга',speakerClass:'mack',text:'...',next:'pablo_confirm_choice'},
+pablo_confirm_choice:{speaker:'',speakerClass:'system',text:'Его слова заставили тебя задуматься. А так ли нужна правда этому городу? Может, вот он — твой шанс показать себя.',choices:[
+  {text:'«Я...»',action:()=>{changeStat('clarity',+10);changeStat('trust',-10)},next:'pablo_confirm_deny'},
+  {text:'«Никогда! Я не стану помогать тебе, псих!»',action:()=>{changeStat('clarity',-10);changeStat('trust',+15)},next:'pablo_confirm_accept'}
+]},
+pablo_confirm_deny:{speaker:'Серёга',speakerClass:'mack',text:'«Я... Я не уверен.»',next:'pablo_confirm_3'},
+pablo_confirm_accept:{speaker:'Серёга',speakerClass:'mack',text:'«У тебя ничего не выйдет! Никогда ещё планы утопистов не срабатывали.»',next:'pablo_confirm_3'},
+pablo_confirm_3:{speaker:'Агёрес',speakerClass:'villain',text:'Выбор за тобой, Серёга. Тебе решать, что будет дальше.',next:'final_choice'},
+final_choice:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'villain',pos:'right'}],speaker:'',speakerClass:'system',text:'Агёрес опускает дудку. Смотрит на тебя.',choices:[
+  {text:'Арестовать Агёреса',next:'ending_dawn_1'},
+  {text:'Отпустить Агёреса',next:'ending_night_1'},
+  {text:'Узнать правду до конца',next:'ending_dead_dawn_1'}
+]},
+
+ending_dawn_1:{speaker:'Серёга',speakerClass:'mack',text:'Твои слова ничего не меняют. Ты целый город лишил дудок, ты это понимаешь!? Я не могу просто закрыть на это глаза и отпустить тебя. Так будет правильно.',next:'ending_dawn_2'},
+ending_dawn_2:{speaker:'Агёрес',speakerClass:'villain',text:'Значит, вот так. Что ж. Хорошо.',next:'ending_dawn_3'},
+ending_dawn_3:{sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'center'},{id:'gromova',pos:'right'}],speaker:'Аня по рации',speakerClass:'gromova',text:'Взяли. Суд будет громким. Он сядет надолго.',next:'ending_dawn_4'},
+ending_dawn_4:{speaker:'Филя по рации',speakerClass:'filya',text:'Ай, молодееееец, Серёга!',next:'ending_dawn_5'},
+ending_dawn_5:{speaker:'Серёга',speakerClass:'mack',text:'Не знаю. Как-то это было слишком просто.',next:'ending_dawn_6'},
+ending_dawn_6:{speaker:'Аня по рации',speakerClass:'gromova',text:'Ты сомневаешься?',next:'ending_dawn_7'},
+ending_dawn_7:{speaker:'Серёга',speakerClass:'mack',text:'Что-то мне подсказывает, что мы с ним ещё увидимся...',choices:[
+  {text:'Отправиться на крышу с Аней',action:()=>changeStat('affection',+15),next:'ending_dawn_roof'},
+  {text:'Уйти одному',action:()=>changeStat('affection',-10),next:'ending_dawn_alone'}
+]},
+ending_dawn_roof:{speaker:'Аня по рации',speakerClass:'gromova',text:'Встретимся на крыше. Конец связи.',next:'ending_dawn_final'},
+ending_dawn_alone:{speaker:'Серёга',speakerClass:'mack',text:'Мне нужно побыть одному...',next:'ending_dawn_alone_2'},
+ending_dawn_alone_2:{speaker:'',speakerClass:'system',text:'*Ты выходишь на улицу. Дождь. Пустая улица. Ты стоишь минуту. Потом достаёшь телефон.*',next:'ending_dawn_alone_3'},
+ending_dawn_alone_3:{speaker:'Серёга',speakerClass:'mack',text:'...Аня. Крыша. Через час. Приходи.',next:'ending_dawn_final'},
+ending_dawn_final:{bg:'dawn',sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'',speakerClass:'system',text:'Вы стоите на крыше логова Агёреса, все трое. Дело раскрыто. Уже через пару недель Берлин снова покроется ароматным дымом, и жизни людей будут полны надежды на светлое будущее.',onEnter:()=>unlockAchievement('ending_dawn'),next:'ending_dawn_quote'},
+ending_dawn_quote:{speaker:'Филя',speakerClass:'filya',text:'Мы сделали это, братишечка. Мы наконец-то сделали это.',next:'ending_dawn_romance'},
+ending_dawn_romance:{sprites:[{id:'mack',pos:'left'},{id:'gromova',pos:'right'}],speaker:'',speakerClass:'system',text:'Аня стоит рядом. Плечом к плечу. Она смотрит не на город, а на тебя.',next:'ending_dawn_romance_2'},
+ending_dawn_romance_2:{speaker:'Аня',speakerClass:'gromova',text:'Наконец-то хэппи-энд. Ты счастлив?',next:'ending_dawn_romance_3'},
+ending_dawn_romance_3:{speaker:'Серёга',speakerClass:'mack',text:'Не люблю хэппи-энды.',next:'ending_dawn_romance_4'},
+ending_dawn_romance_4:{speaker:'Аня',speakerClass:'gromova',text:'Вот, думаю, время пришло. *протягивает тебе ту самую «раритетную» дудку*',next:'ending_final'},
+
+ending_night_1:{speaker:'Серёга',speakerClass:'mack',text:'У тебя есть 3 минуты, пока не прибудет группа захвата. Вали.',next:'ending_night_2'},
+ending_night_2:{speaker:'Агёрес',speakerClass:'villain',text:'Ты уверен? Ладно, вот тебе совет: присмотрись к своим напарникам. Ты удивишься, сколько они тебе недоговаривают на самом деле. *Агёрес убегает через тайный ход в стене*',next:'ending_night_3'},
+ending_night_3:{bg:'bar',sprites:[{id:'mack',pos:'left'},{id:'filya',pos:'right'}],speaker:'',speakerClass:'system',text:'Бар. Пустой стакан. За окном — дождь.',onEnter:()=>unlockAchievement('ending_night'),next:'ending_night_4'},
+ending_night_4:{speaker:'Филя',speakerClass:'filya',text:'Ты мог его остановить.',next:'ending_night_5'},
+ending_night_5:{speaker:'Серёга',speakerClass:'mack',text:'Мог.',choices:[
+  {text:'Налить ещё',action:()=>changeStat('clarity',-20),next:'ending_night_drink'},
+  {text:'Отодвинуть бутылку',action:()=>changeStat('clarity',+15),next:'ending_night_stop'}
+]},
+ending_night_drink:{speaker:'',speakerClass:'system',text:'*Стакан снова полон. И снова пуст. Ты смотришь на дно, будто там спрятан ответ.*',next:'ending_night_6'},
+ending_night_stop:{speaker:'',speakerClass:'system',text:'*Ты отодвигаешь бутылку. Впервые за долгое время — осознанно.*',next:'ending_night_6'},
+ending_night_6:{speaker:'Филя',speakerClass:'filya',text:'Почему не остановил?',next:'ending_night_7'},
+ending_night_7:{speaker:'Серёга',speakerClass:'mack',text:'Почему ты так озабочен его поимкой? Не хочешь рассказать, что именно произошло между вами 10 лет назад?',next:'ending_night_8'},
+ending_night_8:{speaker:'Филя',speakerClass:'filya',text:'Это касается нас двоих.',next:'ending_night_9'},
+ending_night_9:{speaker:'Серёга',speakerClass:'mack',text:'Кот.',next:'ending_night_10'},
+ending_night_10:{speaker:'Филя',speakerClass:'filya',text:'Хорошо. В найденных нами уликах есть несостыковки. Я знаю этого человека дольше, чем хотелось бы. И у меня есть подозрение, что он лишь пешка.',next:'ending_final'},
+
+ending_dead_dawn_1:{speaker:'Серёга',speakerClass:'mack',text:'У нас не больше 5 минут. Выкладывай.',next:'ending_dead_dawn_2'},
+ending_dead_dawn_2:{speaker:'Агёрес',speakerClass:'villain',text:'Не здесь. *Агёрес потянул на себя светильник, и в стене открылся проход. Через коридор вы попали в секретную комнату* Дудки были лишь отвлекающим этапом. Да, эту игру начал я. Но теперь все карты у НЕГО. Я пытаюсь отследить ЕГО и, веришь-нет, остановить. Я не могу сказать тебе, что именно ОН задумал, иначе он перестанет мне доверять.',next:'ending_dead_dawn_3'},
+ending_dead_dawn_3:{speaker:'Серёга',speakerClass:'mack',text:'Почему я должен тебе поверить?',next:'ending_dead_dawn_4'},
+ending_dead_dawn_4:{speaker:'Агёрес',speakerClass:'villain',text:'Я могу сказать лишь, что лаборатория Грэгга не была единственной, и взрыв был не случайностью. Кто-то отчаянно решил положить конец всему, что приносит хоть какую-то радость людям. Позволь мне уйти. Я свяжусь с тобой сразу, как найду зацепку. Вот. *протягивает тебе бумажку со ссылкой* Мы будем держать связь здесь, на засекреченном канале.',next:'ending_dead_dawn_5'},
+ending_dead_dawn_5:{speaker:'Филя по рации',speakerClass:'filya',text:'Серёга....',next:'ending_dead_dawn_6'},
+ending_dead_dawn_6:{speaker:'Серёга',speakerClass:'mack',text:'Я должен, братишечка. Если он не врёт, я не могу этого допустить.',next:'ending_dead_dawn_7'},
+ending_dead_dawn_7:{bg:'hideout',sprites:[{id:'mack',pos:'center'}],speaker:'',speakerClass:'system',text:'Ты держишь в руках клочок бумаги, внимательно осматривая написанное. Тем временем в конце коридора раздаётся громкий звук — дверь, через которую убежал Агёрес, закрывается навсегда.',onEnter:()=>unlockAchievement('ending_dead_dawn'),next:'ending_dead_dawn_8'},
+ending_dead_dawn_8:{speaker:'',speakerClass:'system',text:'Вы с Филей переглянулись, и спустя секунду в логово врывается отряд ФБР. Вы дождались окончания обыска, и как только они покинули здание, вы тихо вышли и направились в бар.',next:'ending_dead_dawn_9'},
+ending_dead_dawn_9:{bg:'bar',sprites:[{id:'gromova',pos:'center'}],speaker:'',speakerClass:'system',text:'Все трое вы сидите в баре, озадаченные «внезапным таинственным» исчезновением Агёреса, обсуждая трагедию проваленного дела. Но ты знал, что это ещё не конец.',next:'ending_final'},
+
+ending_final:{bg:'void',speaker:'',speakerClass:'system',text:'Конец. Так и закончилось это странное дело. Могла бы сказать я.',next:'post_credits_1'},
+
+post_credits_1:{postCredits:'message',pcText:'Серёга ждал,\nи ждал\nи ждал...',next:'post_credits_2'},
+post_credits_2:{postCredits:'paper',pcText:'Серёга,\n\nВсё точно как я говорил. Теперь у меня есть доказательства. Но, если ты читаешь это письмо, ОН уже избавился от меня. Но ОН допустил ошибку, и теперь я знаю, кто ОН.\n\nЯ спрятал доказательства в надёжном месте.\n\nЧтобы найти их, воспользуйся бумажкой, что я дал тебе при нашей последней встрече.\nТебе необходимо сказать кодовое слово «Контрабанда».\n\nНо поспеши, у нас осталось мало времени!\n<span class="paper-sign">— А.<br>31 октября, 23:59</span>',next:null}
+};
+
+let typingTimer=null,isTyping=false,fullText='',lastSpritesKey='';
+
+function typeText(text,callback){
+  clearInterval(typingTimer);isTyping=true;fullText=text;els.text.textContent='';
+  if(!text||text.length===0){isTyping=false;if(callback)callback();return}
+  let i=0;
+  typingTimer=setInterval(()=>{els.text.textContent+=text[i];i++;
+    if(i>=text.length){clearInterval(typingTimer);isTyping=false;if(callback)callback()}},22)
+}
+
+function showRefuseReport(){
+  state.gameStarted=false;
+  els.dialogueBox.classList.add('hidden');
+  els.choices.classList.add('hidden');
+  els.continueHint.classList.add('hidden');
+  els.centerCard.classList.add('hidden');
+  els.hud.classList.add('hidden');
+  els.menuBtn.classList.add('hidden');
+  els.sprites.innerHTML='';
+  lastSpritesKey='';
+
+  els.refuseReportAch.innerHTML='';
+  Object.keys(achievements).forEach(id=>{
+    const a = achievements[id];
+    if(!a.unlocked && id !== 'platinum'){
+      const div = document.createElement('div');
+      div.className = 'refuse-report-ach-item';
+      div.textContent = a.title;
+      els.refuseReportAch.appendChild(div);
+    }
+  });
+  if(!els.refuseReportAch.children.length){
+    const empty = document.createElement('div');
+    empty.className = 'refuse-report-ach-item';
+    empty.textContent = '— всё получено —';
+    els.refuseReportAch.appendChild(empty);
+  }
+
+  els.refuseReportImage.style.backgroundImage = "url('leave.jpg')";
+  els.refuseReportImage.classList.add('has-image');
+
+  els.refuseReport.classList.remove('hidden');
+}
+
+function showNode(nodeId){
+  if(nodeId==='__main_menu__'){goToMainMenu();return}
+  if(nodeId==='__start__'){startNewGame(true);return}
+  if(nodeId==='__refuse_report__'){showRefuseReport();return}
+  const node=script[nodeId];
+  if(!node){console.warn('Сцена не найдена:',nodeId);els.dialogueBox.classList.add('hidden');return}
+  state.sceneIndex=nodeId;
+  if(node.onEnter)node.onEnter();
+  if(node.bg)setBackground(node.bg);
+
+  if(node.postCredits){
+    els.dialogueBox.classList.add('hidden');els.choices.classList.add('hidden');els.continueHint.classList.add('hidden');
+    els.centerCard.classList.add('hidden');els.hud.classList.add('hidden');els.menuBtn.classList.add('hidden');
+    els.sprites.innerHTML='';lastSpritesKey='[]';
+    els.postCredits.classList.remove('hidden');els.pcMessage.classList.add('hidden');els.pcPaper.classList.add('hidden');
+    if(node.postCredits==='message'){els.pcMessage.textContent=node.pcText||'';els.pcMessage.classList.remove('hidden')}
+    else if(node.postCredits==='paper'){els.pcPaperText.innerHTML=node.pcText||'';els.pcPaper.classList.remove('hidden');els.pcPaper.style.animation='none';void els.pcPaper.offsetHeight;els.pcPaper.style.animation=''}
+    saveGame();return;
+  } else { els.postCredits.classList.add('hidden'); }
+
+  if(node.centerText){
+    els.dialogueBox.classList.add('hidden');els.choices.classList.add('hidden');els.continueHint.classList.add('hidden');
+    els.centerCard.classList.remove('hidden');els.centerCard.style.animation='none';void els.centerCard.offsetHeight;els.centerCard.style.animation='';
+    els.centerCardText.className=node.centerStyle==='intro'?'intro':'title';
+    els.centerCardText.textContent=node.centerText;
+    setSprites([]);lastSpritesKey='[]';saveGame();return;
+  } else { els.centerCard.classList.add('hidden'); }
+
+  let spritesToShow=null;
+  const isCharacterSpeaker=node.speakerClass && node.speakerClass!=='system';
+
+  if(ONLY_SPEAKER_VISIBLE && isCharacterSpeaker){
+    const pos=SPEAKER_DEFAULT_POS[node.speakerClass]||'center';
+    spritesToShow=[{id:node.speakerClass,pos:pos}];
+    unlockChar(node.speakerClass);
+    if(Array.isArray(node.sprites)){node.sprites.forEach(s=>unlockChar(s.id))}
+  } else if(Array.isArray(node.sprites)){
+    node.sprites.forEach(s=>unlockChar(s.id));
+    spritesToShow=node.sprites;
+  }
+  if(node.speakerClass)unlockChar(node.speakerClass);
+
+  if(spritesToShow!==null){
+    const key=JSON.stringify(spritesToShow);
+    if(key!==lastSpritesKey){setSprites(spritesToShow);lastSpritesKey=key}
+  }
+
+  highlightSpeaker(node.speakerClass);
+  if(node.speaker){els.speaker.textContent=node.speaker;els.speaker.className=node.speakerClass||''}
+  else{els.speaker.textContent='';els.speaker.className=''}
+
+  els.choices.classList.add('hidden');els.choices.innerHTML='';
+  els.dialogueBox.classList.remove('hidden');els.continueHint.classList.remove('hidden');
+  saveGame();
+  typeText(node.text||'',()=>{if(node.next===null)els.continueHint.classList.add('hidden')})
+}
+
+function showChoices(choices){
+  els.choices.innerHTML='';
+  choices.forEach(choice=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';btn.textContent=choice.text;
+    btn.addEventListener('click',()=>{if(choice.action)choice.action();els.choices.classList.add('hidden');showNode(choice.next)});
+    els.choices.appendChild(btn)
+  });
+  els.choices.classList.remove('hidden')
+}
+
+function handleAdvance(){
+  const node=script[state.sceneIndex];if(!node)return;
+  if(node.postCredits){if(node.next)showNode(node.next);return}
+  if(node.centerText){if(node.next)showNode(node.next);return}
+  if(isTyping){clearInterval(typingTimer);els.text.textContent=fullText;isTyping=false;return}
+  if(node.choices&&els.choices.classList.contains('hidden')){els.continueHint.classList.add('hidden');showChoices(node.choices);return}
+  if(node.choices)return;
+  if(node.next===null)return;
+  showNode(node.next)
+}
+
+function goToMainMenu(){
+  state.gameStarted=false;state.isMainStory=false;
+  els.mainMenu.classList.remove('hidden');els.hud.classList.add('hidden');els.menuBtn.classList.add('hidden');
+  els.dialogueBox.classList.add('hidden');els.choices.classList.add('hidden');els.centerCard.classList.add('hidden');
+  els.postCredits.classList.add('hidden');els.menu.classList.add('hidden');els.achScreen.classList.add('hidden');
+  els.charsScreen.classList.add('hidden');els.credits.classList.add('hidden');els.confirm.classList.add('hidden');
+  els.refuseReport.classList.add('hidden');
+  els.sprites.innerHTML='';lastSpritesKey='';updateContinueUI()
+}
+
+function hideMainUI(){
+  els.mainMenu.classList.add('hidden');els.hud.classList.remove('hidden');els.menuBtn.classList.remove('hidden');
+  els.menu.classList.add('hidden');els.achScreen.classList.add('hidden');els.charsScreen.classList.add('hidden');
+  els.credits.classList.add('hidden');els.confirm.classList.add('hidden');els.refuseReport.classList.add('hidden')
+}
+
+function startNewGame(alreadyConfirmed){
+  if(!alreadyConfirmed){
+    askConfirm('Начать новую игру?','Весь прогресс, достижения и открытые персонажи будут безвозвратно сброшены.',()=>{clearSave();clearAllAchievements();clearUnlockedChars();startNewGame(true)});
+    return
+  }
+  state.clarity=60;state.trust=50;state.affection=40;state.sceneIndex=0;state.flags={};
+  state.unlockedChars={};state.gameStarted=true;state.isMainStory=true;
+  els.sprites.innerHTML='';lastSpritesKey='';
+  hideMainUI();updateStats();
+  showNode('intro_title_berlin')
+}
+
+function continueGame(){
+  const save=loadSave();if(!save){updateContinueUI();return}
+  state.clarity=(typeof save.clarity==='number')?save.clarity:60;
+  state.trust=(typeof save.trust==='number')?save.trust:50;
+  state.affection=(typeof save.affection==='number')?save.affection:40;
+  state.flags=save.flags||{};state.gameStarted=true;state.isMainStory=true;
+  els.sprites.innerHTML='';lastSpritesKey='';
+  hideMainUI();updateStats();
+  const bg=findBgForScene(save.sceneIndex);if(bg)setBackground(bg);
+  if(save.sceneIndex&&script[save.sceneIndex])showNode(save.sceneIndex);else showNode('intro_title_berlin')
+}
+
+function startRefusal(){
+  state.clarity=60;state.trust=50;state.affection=40;state.sceneIndex=0;state.flags={};
+  state.gameStarted=true;state.isMainStory=false;
+  els.sprites.innerHTML='';lastSpritesKey='';
+  hideMainUI();updateStats();
+  unlockAchievement('the_one_who_left');
+  showNode('refuse_1')
+}
+
+function askConfirm(title,text,action){
+  document.querySelector('#confirm h3').textContent=title;
+  els.confirmText.textContent=text;
+  state.confirmAction=action;
+  els.confirm.classList.remove('hidden')
+}
+function hideConfirm(){state.confirmAction=null;els.confirm.classList.add('hidden')}
+
+function openAchievements(from){
+  state.achReturnTo=from;renderAchievements();
+  if(from==='main')els.mainMenu.classList.add('hidden');else els.menu.classList.add('hidden');
+  els.achScreen.classList.remove('hidden')
+}
+function closeAchievements(){els.achScreen.classList.add('hidden');if(state.achReturnTo==='main')els.mainMenu.classList.remove('hidden')}
+function openCharacters(){renderCharacters();els.mainMenu.classList.add('hidden');els.charsScreen.classList.remove('hidden')}
+function closeCharacters(){els.charsScreen.classList.add('hidden');els.mainMenu.classList.remove('hidden')}
+function openCredits(){els.mainMenu.classList.add('hidden');els.credits.classList.remove('hidden')}
+function closeCredits(){els.credits.classList.add('hidden');els.mainMenu.classList.remove('hidden')}
+
+els.confirmYes.addEventListener('click',()=>{const a=state.confirmAction;hideConfirm();if(typeof a==='function')a()});
+els.confirmNo.addEventListener('click',hideConfirm);
+els.btnContinue.addEventListener('click',continueGame);
+els.btnNewGame.addEventListener('click',()=>startNewGame(false));
+els.btnRefuse.addEventListener('click',startRefusal);
+
+els.btnReset.addEventListener('click',()=>{
+  askConfirm(
+    'Сбросить прогресс?',
+    'Весь прогресс, достижения и открытые персонажи будут безвозвратно удалены.',
+    ()=>{
+      clearSave();
+      clearAllAchievements();
+      clearUnlockedChars();
+      renderAchievements();
+      updateContinueUI();
+    }
+  )
+});
+
+els.btnCharacters.addEventListener('click',openCharacters);
+els.btnAchMain.addEventListener('click',()=>openAchievements('main'));
+els.btnCredits.addEventListener('click',openCredits);
+
+document.getElementById('stage').addEventListener('click',(e)=>{
+  if(!state.gameStarted)return;
+  if(e.target.closest('#choices'))return;
+  if(e.target.closest('#menu'))return;
+  if(e.target.closest('#pc-paper'))return;
+  if(e.target.closest('#refuse-report'))return;
+  handleAdvance()
+});
+
+els.menuBtn.addEventListener('click',()=>els.menu.classList.remove('hidden'));
+els.closeMenu.addEventListener('click',()=>els.menu.classList.add('hidden'));
+els.menuRestart.addEventListener('click',()=>{els.menu.classList.add('hidden');startNewGame(false)});
+els.toMainMenu.addEventListener('click',goToMainMenu);
+els.achBtn.addEventListener('click',()=>openAchievements('pause'));
+els.achClose.addEventListener('click',closeAchievements);
+els.charsClose.addEventListener('click',closeCharacters);
+els.creditsClose.addEventListener('click',closeCredits);
+els.pcMenuBtn.addEventListener('click',(e)=>{e.stopPropagation();els.postCredits.classList.add('hidden');goToMainMenu()});
+els.pcRestartBtn.addEventListener('click',(e)=>{e.stopPropagation();els.postCredits.classList.add('hidden');startNewGame(true)});
+els.refuseReportMenuBtn.addEventListener('click',(e)=>{e.stopPropagation();goToMainMenu()});
+
+function runLoader(){
+  const loader=document.getElementById('loader');
+  const fill=document.getElementById('loader-fill');
+  const percent=document.getElementById('loader-percent');
+  const status=document.getElementById('loader-status');
+  const statuses=['Зажигаем неон…','Включаем робот-пылесос…','Считаем спички…','Поливаем Берлин дождём…','Согреваем Филю…','Ищем джин…','Прячем улики…','Открываем бар…','Почти…'];
+  const minTimePerStatus=1200;
+  const duration=statuses.length*minTimePerStatus;
+  const startTime=performance.now();
+  status.textContent=statuses[0];
+  let currentStatusIndex=0;
+
+  function step(now){
+    const elapsed=now-startTime;
+    const t=Math.min(elapsed/duration,1);
+    const eased=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const progress=Math.floor(eased*100);
+    fill.style.width=progress+'%';
+    percent.textContent=progress+'%';
+    const timeIndex=Math.min(Math.floor(elapsed/minTimePerStatus),statuses.length-1);
+    if(timeIndex!==currentStatusIndex){currentStatusIndex=timeIndex;status.textContent=statuses[currentStatusIndex]}
+    if(t<1){requestAnimationFrame(step)}
+    else{
+      status.textContent='Готово.';
+      setTimeout(()=>{loader.classList.add('done');setTimeout(()=>{loader.remove();goToMainMenu()},700)},300)
+    }
+  }
+  requestAnimationFrame(step)
+}
+
+state.unlockedChars = loadUnlockedChars();
+applyMenuBackground();
+preloadAll();
+runLoader();
+</script>
+</body>
+</html>
