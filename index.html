@@ -91,21 +91,7 @@ body{display:flex;align-items:center;justify-content:center;width:100%}
 #center-card{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;padding:32px;pointer-events:none}
 #center-card-text{font-family:var(--fd);text-align:center;color:#e8ddff;line-height:1.4;max-width:400px;animation:neonPulse 2.2s ease-in-out infinite alternate}
 #center-card-text.title{font-size:clamp(24px,8vw,32px);letter-spacing:clamp(3px,1.4vw,5px);text-transform:uppercase}
-#center-card-text.intro{
-  font-size:clamp(15px,4.6vw,17px);
-  letter-spacing:1.5px;
-  color:#d8cfff;
-  line-height:1.65;
-  text-shadow:0 0 6px rgba(255,255,255,.4),0 0 20px var(--nc),0 0 40px var(--ng);
-  background:rgba(5,5,15,.55);
-  border:1px solid rgba(122,77,255,.2);
-  border-radius:14px;
-  padding:18px 22px;
-  backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
-  box-shadow:0 0 40px rgba(0,0,0,.4),inset 0 0 30px rgba(122,77,255,.08);
-  max-width:min(420px,calc(100vw - 56px));
-}
+#center-card-text.intro{font-size:clamp(15px,4.6vw,17px);letter-spacing:1.5px;color:#d8cfff;line-height:1.65;text-shadow:0 0 6px rgba(255,255,255,.4),0 0 20px var(--nc),0 0 40px var(--ng);background:rgba(5,5,15,.55);border:1px solid rgba(122,77,255,.2);border-radius:14px;padding:18px 22px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);box-shadow:0 0 40px rgba(0,0,0,.4),inset 0 0 30px rgba(122,77,255,.08);max-width:min(420px,calc(100vw - 56px))}
 #center-card.hidden{display:none}
 #choices{position:absolute;left:calc(12px + env(safe-area-inset-left));right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));z-index:6;display:flex;flex-direction:column;gap:8px;animation:slideUp .3s ease}
 .choice-btn{font-family:var(--fd);padding:14px 16px;background:rgba(10,10,20,.95);border:1px solid rgba(122,77,255,.5);border-radius:10px;color:#e8e8e8;font-size:12px;letter-spacing:1px;text-align:left;cursor:pointer;transition:all .2s ease;backdrop-filter:blur(6px);line-height:1.5;text-shadow:0 0 6px rgba(184,157,255,.4);min-height:44px;touch-action:manipulation}
@@ -215,6 +201,37 @@ body{display:flex;align-items:center;justify-content:center;width:100%}
   #hud{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}
   #menu-btn{width:38px;height:38px;font-size:18px}
   .choice-btn{padding:10px 12px;font-size:11px}
+}
+@media (hover:none) and (pointer:coarse){
+  #rain,#loader::after,#main-menu::after{display:none!important}
+  #loader::after{display:none}
+  .main-btn,.choice-btn,#dialogue-box,#center-card-text.intro{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  #dialogue-box{background:rgba(8,8,16,.97);box-shadow:none}
+  #center-card-text.intro{background:rgba(5,5,15,.78)}
+  .sprite,.sprite.active,.sprite:not(.active){filter:none!important;will-change:auto}
+  .sprite.active{opacity:1}
+  .sprite:not(.active){opacity:.65}
+  .loader-title,.menu-title,#center-card-text,#pc-message{animation:none!important;text-shadow:0 0 8px #fff,0 0 20px var(--nc),0 0 40px var(--ng)!important}
+  .fill.clarity,.fill.trust,.fill.affection{box-shadow:none}
+  .loader-bar,.loader-bar-fill{box-shadow:none}
+  .loader-bar-fill::after{animation:none;opacity:1}
+  .main-btn:hover,.main-btn:active,.choice-btn:hover,.choice-btn:active,
+  #menu button:hover,#menu button:active,
+  .reset-btn:hover,.reset-btn:active,
+  .refuse-report-btn:hover,.refuse-report-btn:active,
+  .paper-buttons button:hover,.paper-buttons button:active{box-shadow:none!important;transform:none!important}
+  .stat-label,#speaker{text-shadow:none}
+  .ach-item.unlocked,#ach-toast,#menu-btn,.close-x,#game{box-shadow:none}
+  .ach-icon,.ach-item.unlocked .ach-icon,.ach-item.locked .ach-icon{filter:none}
+  .char-card,.char-portrait{box-shadow:none}
+  #ach-toast{transition:opacity .25s ease}
+  #confirm,.confirm-box{animation:none}
+  .confirm-box{box-shadow:none}
+  #background,#background-img{transition:opacity .3s ease}
+  .sprite{transition:opacity .2s ease}
+  #continue-hint{animation:blink 1.6s ease-in-out infinite}
+  #center-card-text{animation:none;text-shadow:0 0 8px #fff,0 0 20px var(--nc)!important}
+  .loader-bar{box-shadow:none}
 }
 </style>
 </head>
